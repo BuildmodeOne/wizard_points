@@ -47,7 +47,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, "Predict tricks", false),
+      appBar: getAppBar(context, "Predict tricks", false, true, widget.game),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           if (isLast && predSum == widget.game.currentRound) {

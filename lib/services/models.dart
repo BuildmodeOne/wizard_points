@@ -26,6 +26,22 @@ class Game {
     }
   }
 
+  Map<Player, int> getScores() {
+    var scores = <Player, int>{};
+
+    for (var player in players) {
+      scores[player] = rounds
+          .sublist(0, currentRound - 1)
+          .map((e) => e.getPoints(player))
+          .fold(0, (a, b) => a + b);
+    }
+
+    return scores;
+
+    // return Map.fromEntries(
+    //     scores.entries.toList()..sort((a, b) => a.value.compareTo(b.value)));
+  }
+
   void newRound() {
     if (currentRound < getMaxRounds()) {
       currentRound++;
@@ -45,4 +61,18 @@ class Round {
   int currentTrick = 0;
   Map<Player, int> predictions = {};
   Map<Player, int> results = {};
+
+  int getPoints(Player player) {
+    int points = 0;
+
+    if (predictions[player] == results[player]) {
+      points += 20;
+    }
+
+    points += (results[player] ?? 0) * 10;
+
+    points += ((predictions[player] ?? 0) - (results[player] ?? 0)).abs() * -10;
+
+    return points;
+  }
 }

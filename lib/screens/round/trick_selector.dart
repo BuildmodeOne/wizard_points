@@ -45,6 +45,9 @@ class _TrickSelectorState extends State<TrickSelector> {
             player: player,
             round: round,
             onTab: () {
+              var currentResult = round.results[player] ?? 0;
+              round.results[player] = currentResult + 1;
+
               if (round.currentTrick + 1 == widget.game.currentRound) {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -74,9 +77,6 @@ class _TrickSelectorState extends State<TrickSelector> {
                 );
                 return;
               }
-
-              var currentResult = round.results[player] ?? 0;
-              round.results[player] = currentResult + 1;
 
               Navigator.pushAndRemoveUntil(
                 context,
@@ -110,7 +110,8 @@ class _TrickSelectorState extends State<TrickSelector> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, "Select trick winner"),
+      appBar:
+          getAppBar(context, "Select trick winner", false, true, widget.game),
       body: Stack(
         children: [
           Center(
