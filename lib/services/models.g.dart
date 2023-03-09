@@ -13,9 +13,7 @@ Game _$GameFromJson(Map<String, dynamic> json) => Game()
   ..rounds = (json['rounds'] as List<dynamic>)
       .map((e) => Round.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..dealer = json['dealer'] == null
-      ? null
-      : Player.fromJson(json['dealer'] as Map<String, dynamic>)
+  ..dealer = json['dealer'] as int?
   ..currentRound = json['currentRound'] as int;
 
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
@@ -23,6 +21,20 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'rounds': instance.rounds,
       'dealer': instance.dealer,
       'currentRound': instance.currentRound,
+    };
+
+GameSettings _$GameSettingsFromJson(Map<String, dynamic> json) => GameSettings()
+  ..pointTricksOnlyIfPredictedCorrectly =
+      json['pointTricksOnlyIfPredictedCorrectly'] as bool
+  ..pointsForTricks = json['pointsForTricks'] as int
+  ..pointsForCorrectPrediction = json['pointsForCorrectPrediction'] as int;
+
+Map<String, dynamic> _$GameSettingsToJson(GameSettings instance) =>
+    <String, dynamic>{
+      'pointTricksOnlyIfPredictedCorrectly':
+          instance.pointTricksOnlyIfPredictedCorrectly,
+      'pointsForTricks': instance.pointsForTricks,
+      'pointsForCorrectPrediction': instance.pointsForCorrectPrediction,
     };
 
 Round _$RoundFromJson(Map<String, dynamic> json) => Round()

@@ -1,5 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,23 +12,68 @@ import 'package:wizard_points/services/models.dart';
 import 'services/config.dart';
 
 void main() {
-  late Game game;
-
   var storage = LocalStorage("wizard_points");
-  var localGame = storage.getItem("game");
-  if (localGame != null) {
-    print("Loading game from local storage");
-    game = Game.fromJson(localGame);
 
-    // replay round because it's only partially saved
-    game.currentRound -= 1;
-  } else {
-    print("Creating new game");
-    game = Game.createDevGame();
+  Game getGame() {
+    var localGame = storage.getItem("game");
+    late Game game;
+
+    if (localGame != null) {
+      print(localGame);
+
+      game = Game.fromJson(localGame);
+
+      var roundIndex =
+          game.rounds.where((element) => element.results.isNotEmpty).length;
+
+      game.rounds
+          .where((element) => element.results.isEmpty)
+          .forEach((element) {
+        element.predictions.clear();
+      });
+
+      game.currentRound = roundIndex;
+    } else {
+      // game = Game.createDevGame();
+      game = Game();
+    }
+
+    print("yes 2");
+
+    return game;
   }
 
-  runApp(WizardPointApp(
-    game: game,
+  GameSettings getGameSettings() {
+    var localSettings = storage.getItem("settings");
+
+    if (localSettings != null) {
+      print(localSettings);
+      var gameSettings = GameSettings.fromJson(localSettings);
+
+      return gameSettings;
+    }
+
+    var gameSettings = GameSettings();
+    storage.setItem("settings", gameSettings.toJson());
+    return gameSettings;
+  }
+
+  runApp(FutureBuilder(
+    future: storage.ready,
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        var game = getGame();
+        game.settings = getGameSettings();
+
+        return WizardPointApp(
+          game: game,
+        );
+      } else {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    },
   ));
 }
 
@@ -80,10 +126,6 @@ class _WizardPointAppState extends State<WizardPointApp> {
         fontFamily: kIsWeb && window.navigator.userAgent.contains('OS 15_')
             ? '-apple-system'
             : null,
-        // appBarTheme: const AppBarTheme(
-        //   color: Color.fromARGB(255, 94, 94, 110),
-        //   //other options
-        // ),
       ),
       // darkTheme: ThemeData(
       //   colorSchemeSeed: const Color.fromARGB(255, 100, 158, 97),

@@ -7,23 +7,11 @@ class Game {
   List<Player> players = List.empty(growable: true);
   List<Round> rounds = List.empty(growable: true);
 
-  Player? dealer;
+  int? dealer;
+
+  GameSettings settings = GameSettings();
 
   Game();
-
-  static Game createDevGame() {
-    var game = Game();
-    game.players.add(Player(name: 'Player 1'));
-    game.players.add(Player(name: 'Player 2'));
-    game.players.add(Player(name: 'Player 3'));
-    game.players.add(Player(name: 'Player 4'));
-    game.players.add(Player(name: 'Player 5'));
-    game.players.add(Player(name: 'Player 6'));
-
-    game.dealer = game.players[0];
-
-    return game;
-  }
 
   int currentRound = 0;
   int getMaxRounds() {
@@ -49,9 +37,14 @@ class Game {
     var scores = <Player, int>{};
 
     for (var player in players) {
+      var index = players.indexOf(player);
+
+      var roundCount =
+          rounds.where((element) => element.results.isNotEmpty).length;
+
       scores[player] = rounds
-          .sublist(0, currentRound - 1)
-          .map((e) => e.getPoints(player))
+          .sublist(0, roundCount)
+          .map((e) => e.getPoints(index))
           .fold(0, (a, b) => a + b);
     }
 
@@ -86,13 +79,12 @@ class Game {
     }
 
     if (dealer == null) {
-      dealer = players[0];
+      dealer = 0;
     } else {
-      var dealerIndex = players.indexOf(dealer!) + 1;
-      if (dealerIndex >= players.length) {
-        dealerIndex = 0;
+      dealer = (dealer ?? 0) + 1;
+      if (dealer! >= players.length) {
+        dealer = 0;
       }
-      dealer = players[dealerIndex];
     }
 
     saveGame();
@@ -103,22 +95,44 @@ class Game {
 }
 
 @JsonSerializable()
+class GameSettings {
+  bool pointTricksOnlyIfPredictedCorrectly = false;
+
+  int pointsForTricks = 10;
+  int pointsForCorrectPrediction = 20;
+
+  factory GameSettings.fromJson(Map<String, dynamic> json) =>
+      _$GameSettingsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GameSettingsToJson(this);
+
+  GameSettings();
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+@JsonSerializable()
 class Round {
   int currentTrick = 0;
 
   Map<int, int> predictions = {};
   Map<int, int> results = {};
 
-  int getPoints(Player player) {
+  int getPoints(int playerIndex) {
     int points = 0;
 
-    if (predictions[player] == results[player]) {
+    if (predictions[playerIndex] == results[playerIndex]) {
       points += 20;
     }
 
-    points += (results[player] ?? 0) * 10;
+    points += (results[playerIndex] ?? 0) * 10;
 
-    points += ((predictions[player] ?? 0) - (results[player] ?? 0)).abs() * -10;
+    points +=
+        ((predictions[playerIndex] ?? 0) - (results[playerIndex] ?? 0)).abs() *
+            -10;
 
     return points;
   }
@@ -127,6 +141,11 @@ class Round {
 
   factory Round.fromJson(Map<String, dynamic> json) => _$RoundFromJson(json);
   Map<String, dynamic> toJson() => _$RoundToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 @JsonSerializable()
@@ -138,4 +157,9 @@ class Player {
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }

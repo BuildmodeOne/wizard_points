@@ -4,13 +4,15 @@ import '../../../services/models.dart';
 
 class PlayerButton extends StatelessWidget {
   final Player player;
+  final int playerIndex;
   final Round round;
   final VoidCallback onTab;
   const PlayerButton(
       {required this.player,
       required this.round,
       required this.onTab,
-      super.key});
+      super.key,
+      required this.playerIndex});
 
   final size = 120.0;
 
@@ -44,7 +46,7 @@ class PlayerButton extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      (round.predictions[player] ?? 0).toString(),
+                      (round.predictions[playerIndex] ?? 0).toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),

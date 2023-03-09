@@ -19,63 +19,51 @@ class SelectPrediction extends StatefulWidget {
 }
 
 class _SelectPredictionState extends State<SelectPrediction> {
+  late Game game;
+  late int index;
+
+  @override
+  void initState() {
+    super.initState();
+    game = widget.game;
+    index = widget.index;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var round = widget.game.rounds[widget.game.currentRound - 1];
-    var player = widget.game.players[widget.index];
+    var round = game.rounds[game.currentRound - 1];
+    var predictions = round.predictions;
+    var player = game.players[index];
 
-    int currentValue =
-        widget.game.rounds[widget.game.currentRound - 1].predictions[player] ??
-            0;
-    bool isLast = widget.index == widget.game.players.length - 1;
+    int currentValue = predictions[index] ?? 0;
+    bool isLast = index == game.players.length - 1;
 
     int predSum = round.predictions.values.fold(0, (a, b) => a + b);
 
     void setPrediction(int value) {
-      print(value);
-      print(widget.game.currentRound);
-
-      if (value > widget.game.currentRound) {
-        print('bäh 1');
+      if (value > game.currentRound) {
         return;
       }
 
       if (value < 0) {
-        print('bäh 2');
         return;
       }
 
-      try {
-        print('aua');
-        widget.game.rounds[widget.game.currentRound - 1]
-            .predictions[widget.index] = value;
-        currentValue = value;
-      } catch (e) {
-        print('fuck off');
-        print(e);
-      }
-
       setState(() {
-        // currentValue = value;
-
-        widget.game.rounds[widget.game.currentRound - 1]
-            .predictions[widget.index] = value;
-        print(value);
-        print(currentValue);
-        print("bea");
+        predictions[index] = value;
       });
     }
 
     return Scaffold(
-      key: ValueKey(currentValue),
-      appBar: getAppBar(context, "Predict tricks", false, true, widget.game),
+      appBar: getAppBar(context, "Predict tricks", false, true, game),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          if (isLast && predSum == widget.game.currentRound) {
+          if (isLast && predSum == game.currentRound) {
             await showDialog(
               context: context,
-              builder: (context) =>
-                  PredictionNotAllowed(prediction: currentValue),
+              builder: (context) => PredictionNotAllowed(
+                prediction: currentValue,
+              ),
             );
 
             return;
@@ -86,7 +74,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
               context,
               MaterialPageRoute(
                 builder: (context) => TrickSelector(
-                  game: widget.game,
+                  game: game,
                 ),
               ),
               (_) => false,
@@ -98,8 +86,8 @@ class _SelectPredictionState extends State<SelectPrediction> {
             context,
             MaterialPageRoute(
               builder: (context) => SelectPrediction(
-                game: widget.game,
-                index: widget.index + 1,
+                game: game,
+                index: index + 1,
               ),
             ),
             (_) => false,
@@ -149,8 +137,8 @@ class _SelectPredictionState extends State<SelectPrediction> {
                             MobileScrollBehaviour().copyWith(scrollbars: false),
                         child: NumberPicker(
                           minValue: 0,
-                          maxValue: widget.game.currentRound,
-                          haptics: true,
+                          maxValue: game.currentRound,
+                          haptics: false,
                           onChanged: (value) {
                             setPrediction(value);
                           },
@@ -166,8 +154,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
                     ],
                   ),
                   AnimatedOpacity(
-                    opacity:
-                        isLast && predSum == widget.game.currentRound ? 1 : 0,
+                    opacity: isLast && predSum == game.currentRound ? 1 : 0,
                     duration: const Duration(milliseconds: 150),
                     child: Container(
                       decoration: BoxDecoration(
@@ -207,14 +194,14 @@ class _SelectPredictionState extends State<SelectPrediction> {
               ),
             ),
             Text(
-              "Dealer: ${widget.game.dealer?.name ?? "None"}",
+              "Dealer: ${game.players[game.dealer ?? 0].name}",
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              "${widget.game.currentRound}. Round",
+              "${game.currentRound}. Round",
               style: const TextStyle(
                 fontSize: 15,
               ),

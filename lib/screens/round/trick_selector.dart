@@ -44,10 +44,11 @@ class _TrickSelectorState extends State<TrickSelector> {
         Transform.translate(
           offset: Offset(x, y),
           child: PlayerButton(
+            playerIndex: i,
             player: player,
             round: round,
             onTab: () {
-              var currentResult = round.results[player] ?? 0;
+              var currentResult = round.results[i] ?? 0;
               round.results[i] = currentResult + 1;
 
               if (round.currentTrick + 1 == widget.game.currentRound) {

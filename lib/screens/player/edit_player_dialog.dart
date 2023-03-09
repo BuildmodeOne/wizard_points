@@ -35,7 +35,7 @@ class EditPlayerDialog extends StatelessWidget {
           ),
           TextButton.icon(
             onPressed: () {
-              game.dealer = player;
+              game.dealer = game.players.indexOf(player);
               Navigator.pop(context, nameController.text);
             },
             icon: const Icon(Icons.ios_share_rounded),

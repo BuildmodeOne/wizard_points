@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wizard_points/screens/scoreboard/scoreboard.dart';
+import 'package:wizard_points/screens/settings/settings.dart';
 
 import '../services/config.dart';
 import '../services/models.dart';
@@ -25,7 +26,7 @@ AppBar getAppBar(BuildContext context, String text,
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Scoreboard(game: game!),
+                builder: (_) => Scoreboard(game: game!),
               ),
             );
           },
@@ -33,15 +34,26 @@ AppBar getAppBar(BuildContext context, String text,
         ),
       ),
       IconButton(
-          onPressed: () async {
-            themeNotifier.toggleTheme();
+        onPressed: () async {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const SettingsScreen(),
+            ),
+          );
+        },
+        icon: const Icon(Icons.settings),
+      ),
+      // IconButton(
+      //     onPressed: () async {
+      //       themeNotifier.toggleTheme();
 
-            final prefs = await SharedPreferences.getInstance();
-            prefs.setBool('theme', themeNotifier.isDark);
-          },
-          icon: themeNotifier.isDark
-              ? const Icon(Icons.brightness_high)
-              : const Icon(Icons.brightness_low)),
+      //       final prefs = await SharedPreferences.getInstance();
+      //       prefs.setBool('theme', themeNotifier.isDark);
+      //     },
+      //     icon: themeNotifier.isDark
+      //         ? const Icon(Icons.brightness_high)
+      //         : const Icon(Icons.brightness_low)),
       const Padding(padding: EdgeInsets.all(10)),
     ],
   );

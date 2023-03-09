@@ -22,6 +22,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
   @override
   Widget build(BuildContext context) {
     var game = widget.game;
+    var isRunning =
+        game.currentRound > 0 && game.currentRound < game.getMaxRounds();
 
     void onReorder(int oldIndex, int newIndex) {
       if (oldIndex < newIndex) {
@@ -65,22 +67,23 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
           game.players.add(Player(name: result));
 
           if (game.players.length == 1) {
-            game.dealer = game.players[0];
+            game.dealer = 0;
           }
         }
       });
     }
 
-    void startGame() {
-      if (game.players.length < 3) {
-        showDialog(
-          context: context,
-          builder: (context) => const NotEnoughPlayers(),
-        );
+    Future<void> restartGame() async {
+      game = Game();
+      var storage = LocalStorage("wizard_points");
+      await storage.ready;
 
-        return;
-      }
+      await storage.setItem("game", game.toJson());
 
+      setState(() {});
+    }
+
+    void nextRound() {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -109,8 +112,26 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       );
     }
 
+    Future<void> startGame() async {
+      if (game.players.length < 3) {
+        showDialog(
+          context: context,
+          builder: (context) => const NotEnoughPlayers(),
+        );
+
+        return;
+      }
+
+      var storage = LocalStorage("wizard_points");
+      await storage.ready;
+
+      await storage.setItem("game", game.toJson());
+
+      nextRound();
+    }
+
     return Scaffold(
-      appBar: getAppBar(context, "Add Players"),
+      appBar: getAppBar(context, "Add Players", false, isRunning, game),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -128,54 +149,110 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
             ),
           ),
           const Padding(padding: EdgeInsets.all(4.0)),
-          FloatingActionButton.extended(
-            heroTag: "btn2",
-            onPressed: () => startGame(),
-            label: const Text("Start Game"),
-            icon: const Icon(Icons.play_arrow_rounded),
+          Visibility(
+            visible: !isRunning,
+            child: FloatingActionButton.extended(
+              heroTag: "btn2",
+              onPressed: () => startGame(),
+              label: const Text("Start Game"),
+              icon: const Icon(Icons.play_arrow_rounded),
+            ),
+          ),
+          Visibility(
+            visible: isRunning,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () => restartGame(),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                  child: const Icon(Icons.restart_alt_rounded),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(2),
+                ),
+                FloatingActionButton.extended(
+                  heroTag: "btn2",
+                  onPressed: () => startGame(),
+                  label: const Text("Resume Game"),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                ),
+              ],
+            ),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ReorderableListView.builder(
-            itemBuilder: (context, index) => Card(
-                  key: ValueKey(index),
-                  child: ListTile(
-                    title: Text(game.players[index].name),
-                    trailing: Visibility(
-                      visible: game.players[index] == game.dealer,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 24),
-                        child: Chip(
-                            elevation: 0,
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            avatar: Icon(
-                              Icons.ios_share_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                            ),
-                            label: const Text("Dealer"),
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide.none,
-                              borderRadius: BorderRadius.circular(100),
-                            )
-                            // padding: EdgeInsets.all(1),
-                            ),
-                      ),
+        child: Column(
+          children: [
+            Visibility(
+              visible: isRunning,
+              child: Column(
+                children: [
+                  const Text(
+                    "Running Game",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    subtitle: Text("${index + 1}. Player"),
-                    leading: const Icon(Icons.person),
-                    onTap: () {
-                      editPlayer(index);
-                    },
                   ),
+                  Text(
+                    "${game.currentRound}. Round",
+                    style: const TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(4),
+                  ),
+                ],
+              ),
+            ),
+            ReorderableListView.builder(
+              shrinkWrap: true,
+              itemBuilder: (context, index) => Card(
+                key: ValueKey(index),
+                child: ListTile(
+                  title: Text(game.players[index].name),
+                  trailing: Visibility(
+                    visible: game.players[index] == game.dealer,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 24),
+                      child: Chip(
+                          elevation: 0,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          avatar: Icon(
+                            Icons.ios_share_rounded,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                          label: const Text("Dealer"),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide.none,
+                            borderRadius: BorderRadius.circular(100),
+                          )
+                          // padding: EdgeInsets.all(1),
+                          ),
+                    ),
+                  ),
+                  subtitle: Text("${index + 1}. Player"),
+                  leading: const Icon(Icons.person),
+                  onTap: () {
+                    editPlayer(index);
+                  },
                 ),
-            itemCount: game.players.length,
-            onReorder: onReorder),
+              ),
+              itemCount: game.players.length,
+              onReorder: onReorder,
+            ),
+          ],
+        ),
       ),
     );
   }
