@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:wizard_points/screens/round/elements/player_button.dart';
 import 'package:wizard_points/screens/round/select_prediction.dart';
+import 'package:wizard_points/screens/scoreboard/scoreboard.dart';
 import 'package:wizard_points/shared/appbar.dart';
 
 import '../../services/models.dart';
 import '../rounds/new_section_screen.dart';
+import '../scoreboard/scoreboard_widget.dart';
 
 class TrickSelector extends StatefulWidget {
   final Game game;
@@ -46,7 +48,7 @@ class _TrickSelectorState extends State<TrickSelector> {
             round: round,
             onTab: () {
               var currentResult = round.results[player] ?? 0;
-              round.results[player] = currentResult + 1;
+              round.results[i] = currentResult + 1;
 
               if (round.currentTrick + 1 == widget.game.currentRound) {
                 Navigator.pushAndRemoveUntil(
@@ -71,6 +73,10 @@ class _TrickSelectorState extends State<TrickSelector> {
                             ),
                             (_) => false);
                       },
+                      duration: const Duration(seconds: 15),
+                      child: ScoreboardWidget(
+                        game: widget.game,
+                      ),
                     ),
                   ),
                   (_) => false,

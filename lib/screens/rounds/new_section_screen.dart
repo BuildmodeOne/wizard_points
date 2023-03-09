@@ -9,6 +9,8 @@ class NewSectionScreen extends StatefulWidget {
   final int current;
   final int max;
   final Color color;
+  final Duration duration;
+  final Widget? child;
 
   const NewSectionScreen(
       {super.key,
@@ -17,7 +19,9 @@ class NewSectionScreen extends StatefulWidget {
       required this.current,
       required this.max,
       required this.color,
-      required this.initCallback});
+      required this.initCallback,
+      this.duration = const Duration(seconds: 3),
+      this.child});
 
   @override
   State<NewSectionScreen> createState() => _NewSectionScreenState();
@@ -25,15 +29,14 @@ class NewSectionScreen extends StatefulWidget {
 
 class _NewSectionScreenState extends State<NewSectionScreen>
     with TickerProviderStateMixin {
-  final Duration duration = const Duration(seconds: 5);
-  // final Duration duration = const Duration(milliseconds: 1);
-
   late AnimationController controller;
   late Timer t;
 
   @override
   void initState() {
     widget.initCallback.call();
+
+    var duration = widget.duration;
 
     controller = AnimationController(
       /// [AnimationController]s can be created with `vsync: this` because of
@@ -66,7 +69,8 @@ class _NewSectionScreenState extends State<NewSectionScreen>
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(
+          child: Flex(
+            direction: Axis.vertical,
             children: [
               Text(
                 "New ${widget.title}",
@@ -75,7 +79,15 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Expanded(
+              Visibility(
+                visible: widget.child == null,
+                child: const Spacer(),
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints.expand(
+                  // width: size + 150,
+                  height: size + 100,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(45),
                   child: Stack(
@@ -115,6 +127,19 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: widget.child == null,
+                child: const Spacer(),
+              ),
+              Visibility(
+                visible: widget.child != null,
+                child: Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: widget.child ?? Container(),
                   ),
                 ),
               ),

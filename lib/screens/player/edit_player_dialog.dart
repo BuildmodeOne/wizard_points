@@ -4,7 +4,8 @@ import '../../services/models.dart';
 
 class EditPlayerDialog extends StatelessWidget {
   final Player player;
-  const EditPlayerDialog({required this.player, super.key});
+  final Game game;
+  const EditPlayerDialog({required this.player, super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,17 @@ class EditPlayerDialog extends StatelessWidget {
               hintText: "Player Name",
             ),
             onSubmitted: (value) => changeName(value),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              game.dealer = player;
+              Navigator.pop(context, nameController.text);
+            },
+            icon: const Icon(Icons.ios_share_rounded),
+            label: const Text("Dealer"),
           ),
         ],
       ),

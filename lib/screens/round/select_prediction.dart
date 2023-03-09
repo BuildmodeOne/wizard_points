@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:wizard_points/screens/player/players_screen.dart';
 import 'package:wizard_points/screens/round/predicton_unavailable.dart';
 import 'package:wizard_points/screens/round/trick_selector.dart';
 import 'package:wizard_points/shared/appbar.dart';
@@ -25,28 +24,50 @@ class _SelectPredictionState extends State<SelectPrediction> {
     var round = widget.game.rounds[widget.game.currentRound - 1];
     var player = widget.game.players[widget.index];
 
-    int currentValue = round.predictions[player] ?? 0;
+    int currentValue =
+        widget.game.rounds[widget.game.currentRound - 1].predictions[player] ??
+            0;
     bool isLast = widget.index == widget.game.players.length - 1;
 
     int predSum = round.predictions.values.fold(0, (a, b) => a + b);
 
     void setPrediction(int value) {
+      print(value);
+      print(widget.game.currentRound);
+
       if (value > widget.game.currentRound) {
+        print('bäh 1');
         return;
       }
 
       if (value < 0) {
+        print('bäh 2');
         return;
       }
 
-      round.predictions[player] = value;
+      try {
+        print('aua');
+        widget.game.rounds[widget.game.currentRound - 1]
+            .predictions[widget.index] = value;
+        currentValue = value;
+      } catch (e) {
+        print('fuck off');
+        print(e);
+      }
 
       setState(() {
-        currentValue = value;
+        // currentValue = value;
+
+        widget.game.rounds[widget.game.currentRound - 1]
+            .predictions[widget.index] = value;
+        print(value);
+        print(currentValue);
+        print("bea");
       });
     }
 
     return Scaffold(
+      key: ValueKey(currentValue),
       appBar: getAppBar(context, "Predict tricks", false, true, widget.game),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -185,8 +206,21 @@ class _SelectPredictionState extends State<SelectPrediction> {
                 ],
               ),
             ),
+            Text(
+              "Dealer: ${widget.game.dealer?.name ?? "None"}",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "${widget.game.currentRound}. Round",
+              style: const TextStyle(
+                fontSize: 15,
+              ),
+            ),
             const Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(25.0),
             ),
           ],
         ),

@@ -3,18 +3,38 @@ import 'dart:html';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wizard_points/screens/player/players_screen.dart';
-import 'package:wizard_points/screens/start.dart';
+import 'package:wizard_points/services/models.dart';
 
 import 'services/config.dart';
 
 void main() {
-  runApp(const WizardPointApp());
+  late Game game;
+
+  var storage = LocalStorage("wizard_points");
+  var localGame = storage.getItem("game");
+  if (localGame != null) {
+    print("Loading game from local storage");
+    game = Game.fromJson(localGame);
+
+    // replay round because it's only partially saved
+    game.currentRound -= 1;
+  } else {
+    print("Creating new game");
+    game = Game.createDevGame();
+  }
+
+  runApp(WizardPointApp(
+    game: game,
+  ));
 }
 
 class WizardPointApp extends StatefulWidget {
-  const WizardPointApp({Key? key}) : super(key: key);
+  const WizardPointApp({Key? key, required this.game}) : super(key: key);
+
+  final Game game;
 
   @override
   State<WizardPointApp> createState() => _WizardPointAppState();
@@ -44,10 +64,14 @@ class _WizardPointAppState extends State<WizardPointApp> {
 
   @override
   Widget build(BuildContext context) {
+    var game = widget.game;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Digitale Backwarenbestellung',
-      home: const PlayerCreationScreen(),
+      home: PlayerCreationScreen(
+        game: game,
+      ),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 107, 7, 6),
