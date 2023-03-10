@@ -1,3 +1,4 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:wizard_points/screens/player/edit_player_dialog.dart';
@@ -8,6 +9,7 @@ import 'package:wizard_points/services/models.dart';
 import '../../shared/appbar.dart';
 import '../round/select_prediction.dart';
 import 'add_player_dialog.dart';
+import 'restart_dialog.dart';
 
 class PlayerCreationScreen extends StatefulWidget {
   const PlayerCreationScreen({super.key, required this.game});
@@ -73,14 +75,40 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       });
     }
 
+    void reopenPage() {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlayerCreationScreen(
+            game: game,
+          ),
+        ),
+        (_) => false,
+      );
+    }
+
     Future<void> restartGame() async {
+      var dialog = await showDialog(
+        context: context,
+        builder: (context) => const RestartGameDialog(),
+      );
+
+      if (!dialog) {
+        return;
+      }
+
       game = Game();
       var storage = LocalStorage("wizard_points");
       await storage.ready;
 
+      var settings = await storage.getItem("settings");
+      if (settings != null) {
+        game.settings = GameSettings.fromJson(settings);
+      }
+
       await storage.setItem("game", game.toJson());
 
-      setState(() {});
+      reopenPage();
     }
 
     void nextRound() {
@@ -165,10 +193,9 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
               children: [
                 FloatingActionButton(
                   onPressed: () => restartGame(),
-                  backgroundColor:
-                      Theme.of(context).colorScheme.secondaryContainer,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                   foregroundColor:
-                      Theme.of(context).colorScheme.onSecondaryContainer,
+                      Theme.of(context).colorScheme.onSurfaceVariant,
                   child: const Icon(Icons.restart_alt_rounded),
                 ),
                 const Padding(
@@ -179,6 +206,10 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                   onPressed: () => startGame(),
                   label: const Text("Resume Game"),
                   icon: const Icon(Icons.play_arrow_rounded),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
               ],
             ),
@@ -219,18 +250,21 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                 child: ListTile(
                   title: Text(game.players[index].name),
                   trailing: Visibility(
-                    visible: game.players[index] == game.dealer,
+                    visible: index == game.dealer,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 24),
                       child: Chip(
                           elevation: 0,
                           backgroundColor:
                               Theme.of(context).colorScheme.secondaryContainer,
-                          avatar: Icon(
-                            Icons.ios_share_rounded,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
+                          avatar: Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Icon(
+                              FluentIcons.board_games_20_filled,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                            ),
                           ),
                           label: const Text("Dealer"),
                           shape: RoundedRectangleBorder(

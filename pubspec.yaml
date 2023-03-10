@@ -42,6 +42,7 @@ dependencies:
   stream_transform: ^2.1.0
   provider: ^6.0.5
   toggle_switch: ^2.0.1
+  fluentui_system_icons: ^1.1.190
 
 dev_dependencies:
   flutter_test:

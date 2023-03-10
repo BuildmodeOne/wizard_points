@@ -44,7 +44,7 @@ class Game {
 
       scores[player] = rounds
           .sublist(0, roundCount)
-          .map((e) => e.getPoints(index))
+          .map((e) => e.getPoints(index, settings))
           .fold(0, (a, b) => a + b);
     }
 
@@ -96,7 +96,8 @@ class Game {
 
 @JsonSerializable()
 class GameSettings {
-  bool pointTricksOnlyIfPredictedCorrectly = false;
+  bool alwaysRewardTricks = true;
+  bool allowZeroPrediction = false;
 
   int pointsForTricks = 10;
   int pointsForCorrectPrediction = 20;
@@ -121,18 +122,21 @@ class Round {
   Map<int, int> predictions = {};
   Map<int, int> results = {};
 
-  int getPoints(int playerIndex) {
+  int getPoints(int playerIndex, GameSettings settings) {
     int points = 0;
+    var correctPrediction = predictions[playerIndex] == results[playerIndex];
 
-    if (predictions[playerIndex] == results[playerIndex]) {
-      points += 20;
+    if (correctPrediction) {
+      points += settings.pointsForCorrectPrediction;
     }
 
-    points += (results[playerIndex] ?? 0) * 10;
+    if (settings.alwaysRewardTricks || correctPrediction) {
+      points += (results[playerIndex] ?? 0) * settings.pointsForTricks;
+    }
 
     points +=
         ((predictions[playerIndex] ?? 0) - (results[playerIndex] ?? 0)).abs() *
-            -10;
+            -settings.pointsForTricks;
 
     return points;
   }

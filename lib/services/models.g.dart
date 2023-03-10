@@ -24,15 +24,13 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
     };
 
 GameSettings _$GameSettingsFromJson(Map<String, dynamic> json) => GameSettings()
-  ..pointTricksOnlyIfPredictedCorrectly =
-      json['pointTricksOnlyIfPredictedCorrectly'] as bool
+  ..alwaysRewardTricks = json['pointTricksOnlyIfPredictedCorrectly'] as bool
   ..pointsForTricks = json['pointsForTricks'] as int
   ..pointsForCorrectPrediction = json['pointsForCorrectPrediction'] as int;
 
 Map<String, dynamic> _$GameSettingsToJson(GameSettings instance) =>
     <String, dynamic>{
-      'pointTricksOnlyIfPredictedCorrectly':
-          instance.pointTricksOnlyIfPredictedCorrectly,
+      'pointTricksOnlyIfPredictedCorrectly': instance.alwaysRewardTricks,
       'pointsForTricks': instance.pointsForTricks,
       'pointsForCorrectPrediction': instance.pointsForCorrectPrediction,
     };

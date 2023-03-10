@@ -19,8 +19,6 @@ void main() {
     late Game game;
 
     if (localGame != null) {
-      print(localGame);
-
       game = Game.fromJson(localGame);
 
       var roundIndex =
@@ -33,13 +31,11 @@ void main() {
       });
 
       game.currentRound = roundIndex;
+      game.dealer = roundIndex % game.players.length - 1;
     } else {
       // game = Game.createDevGame();
       game = Game();
     }
-
-    print("yes 2");
-
     return game;
   }
 
@@ -47,7 +43,6 @@ void main() {
     var localSettings = storage.getItem("settings");
 
     if (localSettings != null) {
-      print(localSettings);
       var gameSettings = GameSettings.fromJson(localSettings);
 
       return gameSettings;

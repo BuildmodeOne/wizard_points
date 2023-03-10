@@ -11,7 +11,7 @@ class Scoreboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(context, "Scoreboard"),
+      appBar: getAppBar(context, "Scoreboard", true, false, game),
       body: ScoreboardWidget(
         game: game,
       ),

@@ -1,3 +1,4 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/models.dart';
@@ -38,7 +39,7 @@ class EditPlayerDialog extends StatelessWidget {
               game.dealer = game.players.indexOf(player);
               Navigator.pop(context, nameController.text);
             },
-            icon: const Icon(Icons.ios_share_rounded),
+            icon: const Icon(FluentIcons.board_games_20_filled),
             label: const Text("Dealer"),
           ),
         ],

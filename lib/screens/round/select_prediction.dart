@@ -154,7 +154,11 @@ class _SelectPredictionState extends State<SelectPrediction> {
                     ],
                   ),
                   AnimatedOpacity(
-                    opacity: isLast && predSum == game.currentRound ? 1 : 0,
+                    opacity: isLast &&
+                            predSum == game.currentRound &&
+                            !game.settings.allowZeroPrediction
+                        ? 1
+                        : 0,
                     duration: const Duration(milliseconds: 150),
                     child: Container(
                       decoration: BoxDecoration(

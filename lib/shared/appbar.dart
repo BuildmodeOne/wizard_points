@@ -38,22 +38,12 @@ AppBar getAppBar(BuildContext context, String text,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const SettingsScreen(),
+              builder: (_) => SettingsScreen(settings: game!.settings),
             ),
           );
         },
         icon: const Icon(Icons.settings),
       ),
-      // IconButton(
-      //     onPressed: () async {
-      //       themeNotifier.toggleTheme();
-
-      //       final prefs = await SharedPreferences.getInstance();
-      //       prefs.setBool('theme', themeNotifier.isDark);
-      //     },
-      //     icon: themeNotifier.isDark
-      //         ? const Icon(Icons.brightness_high)
-      //         : const Icon(Icons.brightness_low)),
       const Padding(padding: EdgeInsets.all(10)),
     ],
   );
