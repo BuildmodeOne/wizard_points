@@ -12,7 +12,7 @@ class AddPlayerDialog extends StatelessWidget {
     }
 
     return AlertDialog(
-      title: const Text("Add Player"),
+      title: const Text('Add Player'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,7 +21,7 @@ class AddPlayerDialog extends StatelessWidget {
             controller: nameController,
             autofocus: true,
             decoration: const InputDecoration(
-              hintText: "Player Name",
+              hintText: 'Player Name',
             ),
             onSubmitted: (value) => changeName(value),
           ),

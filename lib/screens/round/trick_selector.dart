@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:wizard_points/screens/game/game_finished.dart';
 import 'package:wizard_points/screens/round/elements/player_button.dart';
 import 'package:wizard_points/screens/round/select_prediction.dart';
-import 'package:wizard_points/screens/scoreboard/scoreboard.dart';
 import 'package:wizard_points/shared/appbar.dart';
 
 import '../../services/models.dart';
@@ -48,10 +48,26 @@ class _TrickSelectorState extends State<TrickSelector> {
             player: player,
             round: round,
             onTab: () {
+              var game = widget.game;
               var currentResult = round.results[i] ?? 0;
               round.results[i] = currentResult + 1;
 
               if (round.currentTrick + 1 == widget.game.currentRound) {
+                if (game.currentRound == game.getMaxRounds()) {
+                  game.saveGame();
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GameFinishedScreen(
+                        game: game,
+                      ),
+                    ),
+                    (_) => false,
+                  );
+                  return;
+                }
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
@@ -60,7 +76,7 @@ class _TrickSelectorState extends State<TrickSelector> {
                         widget.game.newRound();
                       },
                       color: Theme.of(context).colorScheme.primary,
-                      title: "Round",
+                      title: 'Round',
                       current: widget.game.currentRound + 1,
                       max: widget.game.getMaxRounds(),
                       navigateCallback: () {
@@ -69,7 +85,7 @@ class _TrickSelectorState extends State<TrickSelector> {
                             MaterialPageRoute(
                               builder: (context) => SelectPrediction(
                                 game: widget.game,
-                                index: 0,
+                                index: widget.game.getCurrentFirstPredictor(),
                               ),
                             ),
                             (_) => false);
@@ -82,6 +98,14 @@ class _TrickSelectorState extends State<TrickSelector> {
                   ),
                   (_) => false,
                 );
+
+                var results = round.results;
+
+                for (var i = 0; i < widget.game.players.length; i++) {
+                  if (results[i] == null) {
+                    results[i] = 0;
+                  }
+                }
                 return;
               }
 
@@ -93,7 +117,7 @@ class _TrickSelectorState extends State<TrickSelector> {
                       round.currentTrick++;
                     },
                     color: Theme.of(context).colorScheme.tertiary,
-                    title: "Trick",
+                    title: 'Trick',
                     current: round.currentTrick + 2,
                     max: widget.game.currentRound,
                     navigateCallback: () {
@@ -118,7 +142,7 @@ class _TrickSelectorState extends State<TrickSelector> {
 
     return Scaffold(
       appBar:
-          getAppBar(context, "Select trick winner", false, true, widget.game),
+          getAppBar(context, 'Select trick winner', false, true, widget.game),
       body: Stack(
         children: [
           Center(
@@ -127,14 +151,14 @@ class _TrickSelectorState extends State<TrickSelector> {
               child: Column(
                 children: [
                   Text(
-                    "${widget.game.currentRound}. Round",
+                    '${widget.game.currentRound}. Round',
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "${widget.game.rounds[widget.game.currentRound - 1].currentTrick + 1}/${widget.game.currentRound} Trick",
+                    '${widget.game.rounds[widget.game.currentRound - 1].currentTrick + 1}/${widget.game.currentRound} Trick',
                     style: const TextStyle(
                       fontSize: 20,
                     ),

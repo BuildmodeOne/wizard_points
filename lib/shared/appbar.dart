@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wizard_points/screens/scoreboard/scoreboard.dart';
 import 'package:wizard_points/screens/settings/settings.dart';
 
 import '../services/config.dart';
 import '../services/models.dart';
 
-AppBar getAppBar(BuildContext context, String text,
-    [bool backButton = true, bool showScoreboard = false, Game? game]) {
+AppBar getAppBar(BuildContext context, String text, bool backButton,
+    bool showScoreboard, Game? game,
+    [VoidCallback? action]) {
   return AppBar(
     automaticallyImplyLeading: backButton,
     backgroundColor: themeNotifier.isDark
@@ -40,7 +40,11 @@ AppBar getAppBar(BuildContext context, String text,
             MaterialPageRoute(
               builder: (_) => SettingsScreen(settings: game!.settings),
             ),
-          );
+          ).then((value) {
+            if (action != null) {
+              action();
+            }
+          });
         },
         icon: const Icon(Icons.settings),
       ),

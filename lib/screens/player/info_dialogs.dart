@@ -6,9 +6,9 @@ class NotEnoughPlayers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Info"),
+      title: const Text('Info'),
       content:
-          const Text("At least three players are required to start a game."),
+          const Text('At least three players are required to start a game.'),
       actions: [
         TextButton(
           onPressed: () {

@@ -7,30 +7,33 @@ part of 'models.dart';
 // **************************************************************************
 
 Game _$GameFromJson(Map<String, dynamic> json) => Game()
-  ..players = (json['players'] as List<dynamic>)
-      .map((e) => Player.fromJson(e as Map<String, dynamic>))
-      .toList()
+  ..players =
+      (json['players'] as List<dynamic>).map((e) => e as String).toList()
   ..rounds = (json['rounds'] as List<dynamic>)
       .map((e) => Round.fromJson(e as Map<String, dynamic>))
       .toList()
   ..dealer = json['dealer'] as int?
+  ..settings = GameSettings.fromJson(json['settings'] as Map<String, dynamic>)
   ..currentRound = json['currentRound'] as int;
 
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'players': instance.players,
       'rounds': instance.rounds,
       'dealer': instance.dealer,
+      'settings': instance.settings,
       'currentRound': instance.currentRound,
     };
 
 GameSettings _$GameSettingsFromJson(Map<String, dynamic> json) => GameSettings()
-  ..alwaysRewardTricks = json['pointTricksOnlyIfPredictedCorrectly'] as bool
+  ..alwaysRewardTricks = json['alwaysRewardTricks'] as bool
+  ..allowZeroPrediction = json['allowZeroPrediction'] as bool
   ..pointsForTricks = json['pointsForTricks'] as int
   ..pointsForCorrectPrediction = json['pointsForCorrectPrediction'] as int;
 
 Map<String, dynamic> _$GameSettingsToJson(GameSettings instance) =>
     <String, dynamic>{
-      'pointTricksOnlyIfPredictedCorrectly': instance.alwaysRewardTricks,
+      'alwaysRewardTricks': instance.alwaysRewardTricks,
+      'allowZeroPrediction': instance.allowZeroPrediction,
       'pointsForTricks': instance.pointsForTricks,
       'pointsForCorrectPrediction': instance.pointsForCorrectPrediction,
     };
@@ -49,14 +52,4 @@ Map<String, dynamic> _$RoundToJson(Round instance) => <String, dynamic>{
       'predictions':
           instance.predictions.map((k, e) => MapEntry(k.toString(), e)),
       'results': instance.results.map((k, e) => MapEntry(k.toString(), e)),
-    };
-
-Player _$PlayerFromJson(Map<String, dynamic> json) => Player(
-      name: json['name'] as String? ?? 'Tap to edit',
-      points: json['points'] as int? ?? 0,
-    );
-
-Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
-      'name': instance.name,
-      'points': instance.points,
     };

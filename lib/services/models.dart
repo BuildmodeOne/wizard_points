@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:json_annotation/json_annotation.dart';
+import 'dart:collection';
 import 'package:localstorage/localstorage.dart';
 part 'models.g.dart';
 
 @JsonSerializable()
 class Game {
-  List<Player> players = List.empty(growable: true);
+  List<String> players = List.empty(growable: true);
   List<Round> rounds = List.empty(growable: true);
 
   int? dealer;
@@ -30,11 +33,11 @@ class Game {
 
   void saveGame() {
     var storage = LocalStorage('wizard_points');
-    storage.setItem("game", toJson());
+    storage.setItem('game', toJson());
   }
 
-  Map<Player, int> getScores() {
-    var scores = <Player, int>{};
+  Map<String, int> getScores() {
+    var scores = <String, int>{};
 
     for (var player in players) {
       var index = players.indexOf(player);
@@ -52,6 +55,15 @@ class Game {
 
     // return Map.fromEntries(
     //     scores.entries.toList()..sort((a, b) => a.value.compareTo(b.value)));
+  }
+
+  MapEntry<String, int> getWinner() {
+    var scores = getScores();
+
+    var winner = scores.entries
+        .firstWhere((element) => element.value == scores.values.reduce(max));
+
+    return winner;
   }
 
   bool isRoundFinished() {
@@ -90,14 +102,27 @@ class Game {
     saveGame();
   }
 
+  int getBoundedIndex(int index) {
+    if (index >= players.length) {
+      index -= players.length;
+    }
+
+    return index;
+  }
+
+  int getCurrentFirstPredictor() {
+    return getBoundedIndex((dealer ?? 0) + 1);
+  }
+
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
   Map<String, dynamic> toJson() => _$GameToJson(this);
 }
 
 @JsonSerializable()
 class GameSettings {
-  bool alwaysRewardTricks = true;
+  bool alwaysRewardTricks = false;
   bool allowZeroPrediction = false;
+  bool plusMinusOneVariant = false;
 
   int pointsForTricks = 10;
   int pointsForCorrectPrediction = 20;
@@ -145,22 +170,6 @@ class Round {
 
   factory Round.fromJson(Map<String, dynamic> json) => _$RoundFromJson(json);
   Map<String, dynamic> toJson() => _$RoundToJson(this);
-
-  @override
-  String toString() {
-    return toJson().toString();
-  }
-}
-
-@JsonSerializable()
-class Player {
-  String name;
-  int points;
-
-  Player({this.name = 'Tap to edit', this.points = 0});
-
-  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
-  Map<String, dynamic> toJson() => _$PlayerToJson(this);
 
   @override
   String toString() {

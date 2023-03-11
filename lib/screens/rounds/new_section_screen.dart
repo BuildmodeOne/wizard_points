@@ -73,7 +73,7 @@ class _NewSectionScreenState extends State<NewSectionScreen>
             direction: Axis.vertical,
             children: [
               Text(
-                "New ${widget.title}",
+                'New ${widget.title}',
                 style: const TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -114,8 +114,8 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              // "${widget.game.currentRound} / ${widget.game.getMaxRounds()}",
-                              "${widget.current} / ${widget.max}",
+                              // '${widget.game.currentRound} / ${widget.game.getMaxRounds()}',
+                              '${widget.current} / ${widget.max}',
                               style: const TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.bold),
                             ),
@@ -149,7 +149,7 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                   widget.navigateCallback.call();
                 },
                 icon: const Icon(Icons.skip_next_rounded),
-                label: const Text("Skip"),
+                label: const Text('Skip'),
               ),
             ],
           ),

@@ -4,21 +4,21 @@ import 'package:flutter/material.dart';
 import '../../services/models.dart';
 
 class EditPlayerDialog extends StatelessWidget {
-  final Player player;
+  final String player;
   final Game game;
   const EditPlayerDialog({required this.player, super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
     final TextEditingController nameController = TextEditingController()
-      ..value = TextEditingValue(text: player.name);
+      ..value = TextEditingValue(text: player);
 
     void changeName(String value) {
       Navigator.of(context).pop(value);
     }
 
     return AlertDialog(
-      title: const Text("Edit Player"),
+      title: const Text('Edit Player'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +27,7 @@ class EditPlayerDialog extends StatelessWidget {
             controller: nameController,
             autofocus: true,
             decoration: const InputDecoration(
-              hintText: "Player Name",
+              hintText: 'Player Name',
             ),
             onSubmitted: (value) => changeName(value),
           ),
@@ -40,7 +40,7 @@ class EditPlayerDialog extends StatelessWidget {
               Navigator.pop(context, nameController.text);
             },
             icon: const Icon(FluentIcons.board_games_20_filled),
-            label: const Text("Dealer"),
+            label: const Text('Dealer'),
           ),
         ],
       ),

@@ -25,8 +25,8 @@ class ScoreboardWidget extends StatelessWidget {
           return Card(
             child: ListTile(
               leading: const Icon(Icons.person),
-              title: Text(player.name),
-              trailing: Text("${scores[player]} points"),
+              title: Text(player),
+              trailing: Text('${scores[player]} points'),
             ),
           );
         },

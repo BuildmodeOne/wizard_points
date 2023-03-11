@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../services/models.dart';
 
 class PlayerButton extends StatelessWidget {
-  final Player player;
+  final String player;
   final int playerIndex;
   final Round round;
   final VoidCallback onTab;
@@ -36,7 +36,7 @@ class PlayerButton extends StatelessWidget {
               children: [
                 const Icon(Icons.person),
                 Text(
-                  player.name,
+                  player,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ class PlayerButton extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Text(" predicted"),
+                    const Text(' predicted'),
                   ],
                 ),
               ],

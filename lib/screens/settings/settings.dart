@@ -2,7 +2,6 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../services/config.dart';
 import '../../services/models.dart';
@@ -23,7 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     var settings = widget.settings;
 
-    var storage = LocalStorage("wizard_points");
+    var storage = LocalStorage('wizard_points');
 
     return FutureBuilder(
       future: storage.ready,
@@ -31,7 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Settings"),
+              title: const Text('Settings'),
               backgroundColor: themeNotifier.isDark
                   ? Theme.of(context).colorScheme.primaryContainer
                   : Theme.of(context).colorScheme.primary,
@@ -49,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: Text(
-                      "Personalization",
+                      'Personalization',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -63,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Icon(Icons.color_lens_rounded),
                       ),
                       Expanded(
-                        child: Text("Dark Mode",
+                        child: Text('Dark Mode',
                             style: TextStyle(
                               fontSize: headerSize,
                             )),
@@ -84,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: Text(
-                      "Game Settings",
+                      'Game Settings',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -105,14 +104,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Always reward tricks",
+                              'Always reward tricks',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              "Players always get points for the number of tricks, even if they predicted them wrong",
+                              'Players always get points for the number of tricks, even if they predicted them wrong',
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                 fontSize: explainSize,
@@ -128,38 +127,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: settings.alwaysRewardTricks,
                         onChanged: (value) {
                           settings.alwaysRewardTricks = value;
-                          storage.setItem("settings", settings.toJson());
+                          storage.setItem('settings', settings.toJson());
 
                           setState(() {});
                         },
                       )
                     ],
                   ),
-                  // always allow 0 predictions for last player even if the sum == currentRound
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                   ),
+
+                  // plus minus one
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Padding(
                         padding:
                             EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
-                        child: Icon(FluentIcons.clipboard_error_20_filled),
+                        child: Icon(FluentIcons.clipboard_20_filled),
                       ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Allow zero prediciton",
+                              'Plus minus one',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              "Zero predictions allowed for last player, even if the predictions sum up to the amount of cards",
+                              'The sum of predictions must not add up to the amount of cards, but can be one less or one more',
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                 fontSize: explainSize,
@@ -172,15 +172,71 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         padding: EdgeInsets.only(right: 12),
                       ),
                       Switch(
-                        value: settings.allowZeroPrediction,
+                        value: settings.plusMinusOneVariant,
                         onChanged: (value) {
-                          settings.allowZeroPrediction = value;
-                          storage.setItem("settings", settings.toJson());
+                          settings.plusMinusOneVariant = value;
+                          storage.setItem('settings', settings.toJson());
 
                           setState(() {});
                         },
                       )
                     ],
+                  ),
+
+                  // always allow 0 predictions for last player even if the sum == currentRound
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  IgnorePointer(
+                    ignoring: !settings.plusMinusOneVariant,
+                    child: AnimatedOpacity(
+                      opacity: settings.plusMinusOneVariant ? 1 : 0.3,
+                      duration: const Duration(milliseconds: 250),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(
+                                left: 8.0, right: 8.0, bottom: 4.0),
+                            child: Icon(FluentIcons.clipboard_error_20_filled),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Allow zero prediciton',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  'Zero predictions allowed for last player, even if the predictions sum up to the amount of cards',
+                                  textAlign: TextAlign.justify,
+                                  style: TextStyle(
+                                    fontSize: explainSize,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                          ),
+                          Switch(
+                            value: settings.allowZeroPrediction &&
+                                settings.plusMinusOneVariant,
+                            onChanged: (value) {
+                              settings.allowZeroPrediction = value;
+                              storage.setItem('settings', settings.toJson());
+
+                              setState(() {});
+                            },
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.all(8.0),
@@ -199,14 +255,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Correct prediction",
+                              'Correct prediction',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              "Points for the correct prediction of tricks",
+                              'Points for the correct prediction of tricks',
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                 fontSize: explainSize,
@@ -234,7 +290,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               settings.pointsForCorrectPrediction =
                                   int.parse(value);
 
-                              storage.setItem("settings", settings.toJson());
+                              storage.setItem('settings', settings.toJson());
                               // ignore: empty_catches
                             } catch (e) {}
                           },
@@ -259,14 +315,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Tricks",
+                              'Tricks',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              "Points for each trick",
+                              'Points for each trick',
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                 fontSize: explainSize,
@@ -291,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onChanged: (value) {
                             try {
                               settings.pointsForTricks = int.parse(value);
-                              storage.setItem("settings", settings.toJson());
+                              storage.setItem('settings', settings.toJson());
 
                               // ignore: empty_catches
                             } catch (e) {}
@@ -313,7 +369,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
 
         return const Center(
-          child: Text("Error"),
+          child: Text('Error'),
         );
       },
     );

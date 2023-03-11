@@ -1,8 +1,5 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
 import 'dart:math';
-
-import 'package:flutter/foundation.dart';
+// import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,10 +9,10 @@ import 'package:wizard_points/services/models.dart';
 import 'services/config.dart';
 
 void main() {
-  var storage = LocalStorage("wizard_points");
+  var storage = LocalStorage('wizard_points');
 
   Game getGame() {
-    var localGame = storage.getItem("game");
+    var localGame = storage.getItem('game');
     late Game game;
 
     if (localGame != null) {
@@ -31,7 +28,13 @@ void main() {
       });
 
       game.currentRound = roundIndex;
-      game.dealer = roundIndex % game.players.length - 1;
+      game.dealer = max(roundIndex % game.players.length - 1, 0);
+
+      // clear game if saved game is finished
+      if (game.currentRound == game.getMaxRounds()) {
+        game = Game();
+        game.saveGame();
+      }
     } else {
       // game = Game.createDevGame();
       game = Game();
@@ -40,7 +43,7 @@ void main() {
   }
 
   GameSettings getGameSettings() {
-    var localSettings = storage.getItem("settings");
+    var localSettings = storage.getItem('settings');
 
     if (localSettings != null) {
       var gameSettings = GameSettings.fromJson(localSettings);
@@ -49,7 +52,7 @@ void main() {
     }
 
     var gameSettings = GameSettings();
-    storage.setItem("settings", gameSettings.toJson());
+    storage.setItem('settings', gameSettings.toJson());
     return gameSettings;
   }
 
@@ -107,27 +110,30 @@ class _WizardPointAppState extends State<WizardPointApp> {
   Widget build(BuildContext context) {
     var game = widget.game;
 
+    // //  temp:
+    // var devGame =
+    //     '{"players":["Jutta","Stefan","Johanna","Daniel","Philipp","Eva"],"rounds":[{"currentTrick":0,"predictions":{"1":0,"2":0,"3":0,"4":0,"5":0,"0":0},"results":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":1,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":2,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":3,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":4,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":5,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":6,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":7,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":8,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}}],"dealer":1,"settings":{"alwaysRewardTricks":false,"allowZeroPrediction":false,"pointsForTricks":10,"pointsForCorrectPrediction":20},"currentRound":10}';
+    // game = Game.fromJson(jsonDecode(devGame));
+    // game.settings = widget.game.settings;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Digitale Backwarenbestellung',
+      title: 'Wizard Points',
       home: PlayerCreationScreen(
         game: game,
       ),
+      // home: GameFinishedScreen(
+      //   game: game,
+      // ),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 107, 7, 6),
             brightness: themeNotifier.currentTheme()),
         useMaterial3: true,
-        fontFamily: kIsWeb && window.navigator.userAgent.contains('OS 15_')
-            ? '-apple-system'
-            : null,
+        // fontFamily: kIsWeb && window.navigator.userAgent.contains('OS 15_')
+        //     ? '-apple-system'
+        //     : null,
       ),
-      // darkTheme: ThemeData(
-      //   colorSchemeSeed: const Color.fromARGB(255, 100, 158, 97),
-      //   useMaterial3: true,
-      //   brightness: Brightness.dark,
-      //   visualDensity: VisualDensity.adaptivePlatformDensity,
-      // ),
     );
   }
 }

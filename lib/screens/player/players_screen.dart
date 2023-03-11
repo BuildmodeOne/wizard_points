@@ -1,6 +1,7 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:wizard_points/screens/player/clear_players.dart';
 import 'package:wizard_points/screens/player/edit_player_dialog.dart';
 import 'package:wizard_points/screens/player/info_dialogs.dart';
 import 'package:wizard_points/screens/rounds/new_section_screen.dart';
@@ -31,11 +32,15 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       if (oldIndex < newIndex) {
         newIndex -= 1;
       }
-      final Player item = game.players.removeAt(oldIndex);
+      final String item = game.players.removeAt(oldIndex);
       game.players.insert(newIndex, item);
+
+      if (game.dealer == oldIndex) {
+        game.dealer = newIndex;
+      }
     }
 
-    Future editNameDialog(Player player) {
+    Future editNameDialog(String player) {
       return showDialog(
         context: context,
         builder: (context) => EditPlayerDialog(player: player, game: game),
@@ -52,8 +57,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
     Future<void> editPlayer(int index) async {
       var result = await editNameDialog(game.players[index]);
       setState(() {
-        if (result is String && result != "") {
-          game.players[index].name = result;
+        if (result is String && result != '') {
+          game.players[index] = result;
         }
 
         if (result is bool && result == true) {
@@ -65,8 +70,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
     Future<void> addPlayer() async {
       var result = await addNameDialog();
       setState(() {
-        if (result is String && result != "") {
-          game.players.add(Player(name: result));
+        if (result is String && result != '') {
+          game.players.add(result);
 
           if (game.players.length == 1) {
             game.dealer = 0;
@@ -87,26 +92,53 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       );
     }
 
+    clearPlayers() async {
+      var result = await showDialog(
+        context: context,
+        builder: (context) => const ClearPlayersDialog(),
+      );
+
+      if (result != true) {
+        return;
+      }
+
+      setState(() {
+        game.players.clear();
+      });
+    }
+
     Future<void> restartGame() async {
       var dialog = await showDialog(
         context: context,
         builder: (context) => const RestartGameDialog(),
       );
 
-      if (!dialog) {
+      if (dialog == null || dialog == RestartDialogResult.cancel) {
         return;
       }
 
+      late List<String> players;
+
+      if (dialog == RestartDialogResult.keepPlayers) {
+        players = game.players;
+      }
+
       game = Game();
-      var storage = LocalStorage("wizard_points");
+
+      if (dialog == RestartDialogResult.keepPlayers) {
+        game.players = players;
+        game.dealer = 0;
+      }
+
+      var storage = LocalStorage('wizard_points');
       await storage.ready;
 
-      var settings = await storage.getItem("settings");
+      var settings = await storage.getItem('settings');
       if (settings != null) {
         game.settings = GameSettings.fromJson(settings);
       }
 
-      await storage.setItem("game", game.toJson());
+      await storage.setItem('game', game.toJson());
 
       reopenPage();
     }
@@ -120,7 +152,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
               game.newRound();
             },
             color: Theme.of(context).colorScheme.primary,
-            title: "Round",
+            title: 'Round',
             current: game.currentRound + 1,
             max: game.getMaxRounds(),
             navigateCallback: () {
@@ -129,7 +161,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                   MaterialPageRoute(
                     builder: (context) => SelectPrediction(
                       game: game,
-                      index: 0,
+                      index: game.getCurrentFirstPredictor(),
                     ),
                   ),
                   (_) => false);
@@ -150,16 +182,16 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
         return;
       }
 
-      var storage = LocalStorage("wizard_points");
+      var storage = LocalStorage('wizard_points');
       await storage.ready;
 
-      await storage.setItem("game", game.toJson());
+      await storage.setItem('game', game.toJson());
 
       nextRound();
     }
 
     return Scaffold(
-      appBar: getAppBar(context, "Add Players", false, isRunning, game),
+      appBar: getAppBar(context, 'Add Players', false, isRunning, game),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -168,8 +200,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
             visible: game.players.length < 6,
             child: FloatingActionButton.extended(
               onPressed: () => addPlayer(),
-              heroTag: "btn1",
-              label: const Text("Player"),
+              heroTag: 'btn1',
+              label: const Text('Player'),
               icon: const Icon(Icons.add_rounded),
               backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
               foregroundColor:
@@ -179,11 +211,34 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
           const Padding(padding: EdgeInsets.all(4.0)),
           Visibility(
             visible: !isRunning,
-            child: FloatingActionButton.extended(
-              heroTag: "btn2",
-              onPressed: () => startGame(),
-              label: const Text("Start Game"),
-              icon: const Icon(Icons.play_arrow_rounded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Visibility(
+                  visible: game.players.isNotEmpty,
+                  child: FloatingActionButton(
+                    onPressed: () => clearPlayers(),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onSurfaceVariant,
+                    child: const Icon(Icons.delete_rounded),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(2),
+                ),
+                FloatingActionButton.extended(
+                  heroTag: 'btn2',
+                  onPressed: () => startGame(),
+                  label: const Text('Start Game'),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ],
             ),
           ),
           Visibility(
@@ -202,9 +257,9 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                   padding: EdgeInsets.all(2),
                 ),
                 FloatingActionButton.extended(
-                  heroTag: "btn2",
+                  heroTag: 'btn2',
                   onPressed: () => startGame(),
-                  label: const Text("Resume Game"),
+                  label: const Text('Resume Game'),
                   icon: const Icon(Icons.play_arrow_rounded),
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
@@ -225,14 +280,14 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
               child: Column(
                 children: [
                   const Text(
-                    "Running Game",
+                    'Running Game',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "${game.currentRound}. Round",
+                    '${game.currentRound}. Round',
                     style: const TextStyle(
                       fontSize: 15,
                     ),
@@ -248,7 +303,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
               itemBuilder: (context, index) => Card(
                 key: ValueKey(index),
                 child: ListTile(
-                  title: Text(game.players[index].name),
+                  title: Text(game.players[index]),
                   trailing: Visibility(
                     visible: index == game.dealer,
                     child: Padding(
@@ -266,7 +321,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                                   .onSecondaryContainer,
                             ),
                           ),
-                          label: const Text("Dealer"),
+                          label: const Text('Dealer'),
                           shape: RoundedRectangleBorder(
                             side: BorderSide.none,
                             borderRadius: BorderRadius.circular(100),
@@ -275,7 +330,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                           ),
                     ),
                   ),
-                  subtitle: Text("${index + 1}. Player"),
+                  subtitle: Text('${index + 1}. Player'),
                   leading: const Icon(Icons.person),
                   onTap: () {
                     editPlayer(index);

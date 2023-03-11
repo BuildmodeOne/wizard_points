@@ -43,6 +43,7 @@ dependencies:
   provider: ^6.0.5
   toggle_switch: ^2.0.1
   fluentui_system_icons: ^1.1.190
+  confetti: ^0.7.0
 
 dev_dependencies:
   flutter_test:

@@ -36,7 +36,9 @@ class _SelectPredictionState extends State<SelectPrediction> {
     var player = game.players[index];
 
     int currentValue = predictions[index] ?? 0;
-    bool isLast = index == game.players.length - 1;
+    bool isLast = index ==
+        game.getBoundedIndex(
+            game.getCurrentFirstPredictor() + game.players.length - 1);
 
     int predSum = round.predictions.values.fold(0, (a, b) => a + b);
 
@@ -54,11 +56,31 @@ class _SelectPredictionState extends State<SelectPrediction> {
       });
     }
 
+    var settings = game.settings;
+
+    var invalidPrediction = isLast &&
+        predSum == game.currentRound &&
+        !(predictions[index] == 0 && settings.allowZeroPrediction) &&
+        settings.plusMinusOneVariant;
+
+    void update() {
+      setState(() {
+        invalidPrediction = isLast &&
+            predSum == game.currentRound &&
+            !(predictions[index] == 0 && settings.allowZeroPrediction) &&
+            settings.plusMinusOneVariant;
+      });
+    }
+
     return Scaffold(
-      appBar: getAppBar(context, "Predict tricks", false, true, game),
+      appBar: getAppBar(context, 'Predict tricks', false, true, game, update),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          if (isLast && predSum == game.currentRound) {
+          if (predictions[index] == null) {
+            predictions[index] = 0;
+          }
+
+          if (invalidPrediction) {
             await showDialog(
               context: context,
               builder: (context) => PredictionNotAllowed(
@@ -87,13 +109,13 @@ class _SelectPredictionState extends State<SelectPrediction> {
             MaterialPageRoute(
               builder: (context) => SelectPrediction(
                 game: game,
-                index: index + 1,
+                index: game.getBoundedIndex(index + 1),
               ),
             ),
             (_) => false,
           );
         },
-        label: const Text("Predict"),
+        label: const Text('Predict'),
         icon: const Icon(Icons.check_rounded),
       ),
       body: Center(
@@ -106,13 +128,13 @@ class _SelectPredictionState extends State<SelectPrediction> {
               padding: EdgeInsets.all(8.0),
             ),
             const Text(
-              "Predict your tricks,",
+              'Predict your tricks,',
               style: TextStyle(
                 fontSize: 20,
               ),
             ),
             Text(
-              player.name,
+              player,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30,
@@ -154,11 +176,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
                     ],
                   ),
                   AnimatedOpacity(
-                    opacity: isLast &&
-                            predSum == game.currentRound &&
-                            !game.settings.allowZeroPrediction
-                        ? 1
-                        : 0,
+                    opacity: invalidPrediction ? 1 : 0,
                     duration: const Duration(milliseconds: 150),
                     child: Container(
                       decoration: BoxDecoration(
@@ -182,7 +200,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
                                   .onErrorContainer,
                             ),
                             Text(
-                              "This prediction is not allowed",
+                              'This prediction is not allowed',
                               style: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -198,14 +216,14 @@ class _SelectPredictionState extends State<SelectPrediction> {
               ),
             ),
             Text(
-              "Dealer: ${game.players[game.dealer ?? 0].name}",
+              'Dealer: ${game.players[game.dealer ?? 0]}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              "${game.currentRound}. Round",
+              '${game.currentRound}. Round',
               style: const TextStyle(
                 fontSize: 15,
               ),

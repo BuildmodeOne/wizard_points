@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PredictionNotAllowed extends StatelessWidget {
@@ -9,14 +8,14 @@ class PredictionNotAllowed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Info"),
+      title: const Text('Info'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("You can't choose $prediction as your prediction."),
           const Text(
-              "The number of predictions must not sum up to the number of cards to avoid that everybody is correct."),
+              'The number of predictions must not sum up to the number of cards to avoid that everybody is correct.'),
         ],
       ),
       actions: [
