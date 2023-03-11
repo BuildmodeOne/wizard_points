@@ -31,8 +31,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 
-!build/app/outputs/flutter-apk/app-release.apk
-build/*
+!/build/app/outputs/flutter-apk/app-release.apk
+/build/*
 # Symbolication related
 app.*.symbols
 
