@@ -13,6 +13,7 @@ Visit the [website](https://wizardpoints.app/#/) ([wizardpoints.app](https://wiz
     - Personalization
     - Game rules
 - Intuitive and simple UI
+- Progressive Web App (PWA)
 
 ## Screenshots
 
