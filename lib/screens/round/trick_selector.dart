@@ -64,7 +64,7 @@ class _TrickSelectorState extends State<TrickSelector> {
 
     for (int i = 0; i < widget.game.players.length; i++) {
       var player = widget.game.players[i];
-      var angle = 360 / widget.game.players.length * i * -1 + 180 + rotation;
+      var angle = 360 / widget.game.players.length * i * -1 + 180 - rotation;
 
       var x = radius * sin(pi * 2 * angle / 360) +
           MediaQuery.of(context).size.width / 2 -
