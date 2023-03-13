@@ -28,6 +28,8 @@ class _TrickSelectorState extends State<TrickSelector> {
   final buttonOffset = 120 / 2;
   late StreamSubscription<GyroscopeEvent> _gyroscopeSubscription;
 
+  late double rotation = 0;
+
   List<double>? _gyroscopeValues;
 
   @override
@@ -40,6 +42,8 @@ class _TrickSelectorState extends State<TrickSelector> {
         });
       },
     );
+
+    rotation = 0;
   }
 
   @override
@@ -50,8 +54,9 @@ class _TrickSelectorState extends State<TrickSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final gyroscope =
-        _gyroscopeValues?.map((double v) => v.toStringAsFixed(2)).toList();
+    if (_gyroscopeValues != null) {
+      rotation += _gyroscopeValues![1] * 10;
+    }
 
     var playerButtons = <Widget>[];
 
@@ -59,11 +64,7 @@ class _TrickSelectorState extends State<TrickSelector> {
 
     for (int i = 0; i < widget.game.players.length; i++) {
       var player = widget.game.players[i];
-      var angle = 360 / widget.game.players.length * i * -1 + 180;
-
-      if (_gyroscopeValues != null) {
-        angle += _gyroscopeValues![1] * 10;
-      }
+      var angle = 360 / widget.game.players.length * i * -1 + 180 + rotation;
 
       var x = radius * sin(pi * 2 * angle / 360) +
           MediaQuery.of(context).size.width / 2 -
@@ -199,11 +200,6 @@ class _TrickSelectorState extends State<TrickSelector> {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: (gyroscope ?? []).length,
-                      itemBuilder: (context, index) => Text(gyroscope![index]),
-                    ),
                     Text(
                       '${widget.game.currentRound}. Round',
                       style: const TextStyle(
