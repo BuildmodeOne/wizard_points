@@ -1,8 +1,9 @@
 # Wizard Points
 
-Wizard Points is a simple [web app](https://wizard-points.web.app/#/) that allows you to keep track of your points in the card game [Wizard](https://en.wikipedia.org/wiki/Wizard_(card_game)). 
+Wizard Points is a simple web app that allows you to keep track of your points in the card game [Wizard](https://en.wikipedia.org/wiki/Wizard_(card_game)). 
 
-Visit the [website](https://wizard-points.web.app/#/) to get started.
+Visit the [website](https://wizard-points.web.app/#/) ([wizard-points.web.app](https://wizard-points.web.app/#/)) to get started.
+
 
 ## Features
 
@@ -14,8 +15,6 @@ Visit the [website](https://wizard-points.web.app/#/) to get started.
 - Intuitive and simple UI
 
 ## Screenshots
-
-
 
 <img src="images/players.png"
      alt="Player screen"
