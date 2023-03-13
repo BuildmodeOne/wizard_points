@@ -5,9 +5,9 @@ import 'package:wizard_points/screens/settings/settings.dart';
 import '../services/config.dart';
 import '../services/models.dart';
 
-AppBar getAppBar(BuildContext context, String text, bool backButton,
-    bool showScoreboard, Game? game,
-    [VoidCallback? action]) {
+AppBar getAppBar(
+    BuildContext context, String text, bool showScoreboard, Game? game,
+    [VoidCallback? action, bool backButton = true]) {
   return AppBar(
     automaticallyImplyLeading: backButton,
     backgroundColor: themeNotifier.isDark
@@ -19,6 +19,13 @@ AppBar getAppBar(BuildContext context, String text, bool backButton,
     elevation: 5,
     title: Text(text),
     actions: [
+      Visibility(
+        visible: showScoreboard,
+        child: IconButton(
+          onPressed: () => game!.restartGame(game, context),
+          icon: const Icon(Icons.restart_alt_rounded),
+        ),
+      ),
       Visibility(
         visible: showScoreboard,
         child: IconButton(
@@ -35,11 +42,12 @@ AppBar getAppBar(BuildContext context, String text, bool backButton,
       ),
       IconButton(
         onPressed: () async {
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (_) => SettingsScreen(settings: game!.settings),
             ),
+            (_) => false,
           ).then((value) {
             if (action != null) {
               action();

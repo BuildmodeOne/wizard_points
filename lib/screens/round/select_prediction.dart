@@ -1,3 +1,4 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:wizard_points/screens/round/predicton_unavailable.dart';
@@ -7,6 +8,7 @@ import 'package:wizard_points/shared/filled_icon_button.dart';
 
 import '../../services/models.dart';
 import '../../services/scroll_behaviour.dart';
+import '../../shared/dealer.dart';
 
 class SelectPrediction extends StatefulWidget {
   final Game game;
@@ -73,7 +75,7 @@ class _SelectPredictionState extends State<SelectPrediction> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, 'Predict tricks', false, true, game, update),
+      appBar: getAppBar(context, 'Predict tricks', true, game, update),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           if (predictions[index] == null) {
@@ -215,12 +217,8 @@ class _SelectPredictionState extends State<SelectPrediction> {
                 ],
               ),
             ),
-            Text(
-              'Dealer: ${game.players[game.dealer ?? 0]}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            CurrentDealerWidget(
+              dealerName: game.players[game.dealer ?? 0],
             ),
             Text(
               '${game.currentRound}. Round',

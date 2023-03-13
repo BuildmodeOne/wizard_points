@@ -1,8 +1,12 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:collection';
 import 'package:localstorage/localstorage.dart';
+
+import '../screens/player/players_screen.dart';
+import '../screens/player/restart_dialog.dart';
 part 'models.g.dart';
 
 @JsonSerializable()
@@ -66,14 +70,14 @@ class Game {
     return winner;
   }
 
-  bool isRoundFinished() {
+  bool isRoundFinished(int roundIndex) {
     if (currentRound == 0) {
       return false;
     }
 
     var round = rounds[currentRound - 1];
 
-    return round.results.length == players.length;
+    return round.results.length == roundIndex;
   }
 
   void newRound() {
@@ -107,11 +111,60 @@ class Game {
       index -= players.length;
     }
 
+    if (index < 0) {
+      index += players.length;
+    }
+
     return index;
   }
 
   int getCurrentFirstPredictor() {
     return getBoundedIndex((dealer ?? 0) + 1);
+  }
+
+  Future<void> restartGame(Game game, BuildContext context) async {
+    var dialog = await showDialog(
+      context: context,
+      builder: (context) => const RestartGameDialog(),
+    );
+
+    if (dialog == null || dialog == RestartDialogResult.cancel) {
+      return;
+    }
+
+    late List<String> players;
+
+    if (dialog == RestartDialogResult.keepPlayers) {
+      players = this.players;
+    }
+
+    game = Game();
+
+    if (dialog == RestartDialogResult.keepPlayers) {
+      game.players = players;
+      game.dealer = 0;
+    }
+
+    var storage = LocalStorage('wizard_points');
+    await storage.ready;
+
+    var settings = await storage.getItem('settings');
+    if (settings != null) {
+      game.settings = GameSettings.fromJson(settings);
+    }
+
+    await storage.setItem('game', game.toJson());
+
+    // ignore: use_build_context_synchronously
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerCreationScreen(
+          game: game,
+        ),
+      ),
+      (_) => false,
+    );
   }
 
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
@@ -122,7 +175,7 @@ class Game {
 class GameSettings {
   bool alwaysRewardTricks = false;
   bool allowZeroPrediction = false;
-  bool plusMinusOneVariant = false;
+  bool plusMinusOneVariant = true;
 
   int pointsForTricks = 10;
   int pointsForCorrectPrediction = 20;
@@ -147,21 +200,28 @@ class Round {
   Map<int, int> predictions = {};
   Map<int, int> results = {};
 
+  int getResultsCount(int playerIndex) {
+    return results.entries
+        .where((element) => element.value == playerIndex)
+        .length;
+  }
+
   int getPoints(int playerIndex, GameSettings settings) {
     int points = 0;
-    var correctPrediction = predictions[playerIndex] == results[playerIndex];
+    var correctPrediction =
+        predictions[playerIndex] == getResultsCount(playerIndex);
 
     if (correctPrediction) {
       points += settings.pointsForCorrectPrediction;
     }
 
     if (settings.alwaysRewardTricks || correctPrediction) {
-      points += (results[playerIndex] ?? 0) * settings.pointsForTricks;
+      points += (getResultsCount(playerIndex)) * settings.pointsForTricks;
     }
 
-    points +=
-        ((predictions[playerIndex] ?? 0) - (results[playerIndex] ?? 0)).abs() *
-            -settings.pointsForTricks;
+    points += ((predictions[playerIndex] ?? 0) - (getResultsCount(playerIndex)))
+            .abs() *
+        -settings.pointsForTricks;
 
     return points;
   }

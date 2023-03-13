@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:wizard_points/screens/game/game_finished.dart';
 import 'package:wizard_points/screens/round/elements/player_button.dart';
 import 'package:wizard_points/screens/round/select_prediction.dart';
 import 'package:wizard_points/shared/appbar.dart';
+import 'package:wizard_points/shared/dealer.dart';
 
 import '../../services/models.dart';
 import '../rounds/new_section_screen.dart';
@@ -47,10 +49,10 @@ class _TrickSelectorState extends State<TrickSelector> {
             playerIndex: i,
             player: player,
             round: round,
+            game: widget.game,
             onTab: () {
               var game = widget.game;
-              var currentResult = round.results[i] ?? 0;
-              round.results[i] = currentResult + 1;
+              round.results[round.currentTrick] = i;
 
               if (round.currentTrick + 1 == widget.game.currentRound) {
                 if (game.currentRound == game.getMaxRounds()) {
@@ -81,31 +83,34 @@ class _TrickSelectorState extends State<TrickSelector> {
                       max: widget.game.getMaxRounds(),
                       navigateCallback: () {
                         Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelectPrediction(
-                                game: widget.game,
-                                index: widget.game.getCurrentFirstPredictor(),
-                              ),
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SelectPrediction(
+                              game: widget.game,
+                              index: widget.game.getCurrentFirstPredictor(),
                             ),
-                            (_) => false);
+                          ),
+                          (_) => false,
+                        );
                       },
                       duration: const Duration(seconds: 15),
-                      child: ScoreboardWidget(
-                        game: widget.game,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CurrentDealerWidget(
+                            dealerName: game.players[
+                                game.getBoundedIndex((game.dealer ?? 0) + 1)],
+                          ),
+                          ScoreboardWidget(
+                            game: widget.game,
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   (_) => false,
                 );
 
-                var results = round.results;
-
-                for (var i = 0; i < widget.game.players.length; i++) {
-                  if (results[i] == null) {
-                    results[i] = 0;
-                  }
-                }
                 return;
               }
 
@@ -122,13 +127,14 @@ class _TrickSelectorState extends State<TrickSelector> {
                     max: widget.game.currentRound,
                     navigateCallback: () {
                       Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TrickSelector(
-                              game: widget.game,
-                            ),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TrickSelector(
+                            game: widget.game,
                           ),
-                          (_) => false);
+                        ),
+                        (_) => false,
+                      );
                     },
                   ),
                 ),
@@ -140,40 +146,54 @@ class _TrickSelectorState extends State<TrickSelector> {
       );
     }
 
-    return Scaffold(
-      appBar:
-          getAppBar(context, 'Select trick winner', false, true, widget.game),
-      body: Stack(
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Text(
-                    '${widget.game.currentRound}. Round',
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
+    return WillPopScope(
+      onWillPop: () async {
+        // determin back origin (new round or new trick)
+        if (round.currentTrick == 0) {
+          // new round
+          widget.game.currentRound--;
+          widget.game.rounds.removeLast();
+        } else {
+          // new trick
+          round.currentTrick--;
+        }
+
+        return true;
+      },
+      child: Scaffold(
+        appBar: getAppBar(context, 'Select trick winner', true, widget.game),
+        body: Stack(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Text(
+                      '${widget.game.currentRound}. Round',
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${widget.game.rounds[widget.game.currentRound - 1].currentTrick + 1}/${widget.game.currentRound} Trick',
-                    style: const TextStyle(
-                      fontSize: 20,
+                    Text(
+                      '${widget.game.rounds[widget.game.currentRound - 1].currentTrick + 1}/${widget.game.currentRound} Trick',
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Container(
-            constraints: const BoxConstraints.expand(),
-            child: Stack(
-              children: playerButtons,
-            ),
-          ),
-        ],
+            Container(
+              constraints: const BoxConstraints.expand(),
+              child: Stack(
+                children: playerButtons,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

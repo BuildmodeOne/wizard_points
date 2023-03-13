@@ -152,14 +152,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Plus minus one',
+                              'Plus/minus one',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              'The sum of predictions must not add up to the amount of cards, but can be one less or one more',
+                              'The sum of predictions must not add up to the amount of cards, but can be less or more',
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                 fontSize: explainSize,

@@ -10,7 +10,6 @@ import 'package:wizard_points/services/models.dart';
 import '../../shared/appbar.dart';
 import '../round/select_prediction.dart';
 import 'add_player_dialog.dart';
-import 'restart_dialog.dart';
 
 class PlayerCreationScreen extends StatefulWidget {
   const PlayerCreationScreen({super.key, required this.game});
@@ -32,12 +31,13 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       if (oldIndex < newIndex) {
         newIndex -= 1;
       }
+
+      var dealer = game.players[game.dealer!];
+
       final String item = game.players.removeAt(oldIndex);
       game.players.insert(newIndex, item);
 
-      if (game.dealer == oldIndex) {
-        game.dealer = newIndex;
-      }
+      game.dealer = game.players.indexOf(dealer);
     }
 
     Future editNameDialog(String player) {
@@ -80,18 +80,6 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       });
     }
 
-    void reopenPage() {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PlayerCreationScreen(
-            game: game,
-          ),
-        ),
-        (_) => false,
-      );
-    }
-
     clearPlayers() async {
       var result = await showDialog(
         context: context,
@@ -107,44 +95,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
       });
     }
 
-    Future<void> restartGame() async {
-      var dialog = await showDialog(
-        context: context,
-        builder: (context) => const RestartGameDialog(),
-      );
-
-      if (dialog == null || dialog == RestartDialogResult.cancel) {
-        return;
-      }
-
-      late List<String> players;
-
-      if (dialog == RestartDialogResult.keepPlayers) {
-        players = game.players;
-      }
-
-      game = Game();
-
-      if (dialog == RestartDialogResult.keepPlayers) {
-        game.players = players;
-        game.dealer = 0;
-      }
-
-      var storage = LocalStorage('wizard_points');
-      await storage.ready;
-
-      var settings = await storage.getItem('settings');
-      if (settings != null) {
-        game.settings = GameSettings.fromJson(settings);
-      }
-
-      await storage.setItem('game', game.toJson());
-
-      reopenPage();
-    }
-
     void nextRound() {
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (context) => NewSectionScreen(
@@ -157,18 +109,20 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
             max: game.getMaxRounds(),
             navigateCallback: () {
               Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SelectPrediction(
-                      game: game,
-                      index: game.getCurrentFirstPredictor(),
-                    ),
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SelectPrediction(
+                    game: game,
+                    index: game.getCurrentFirstPredictor(),
                   ),
-                  (_) => false);
+                ),
+                (_) => false,
+              );
             },
             duration: const Duration(seconds: 3),
           ),
         ),
+        (_) => false,
       );
     }
 
@@ -191,7 +145,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, 'Add Players', false, isRunning, game),
+      appBar: getAppBar(context, 'Add Players', isRunning, game),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -246,16 +200,16 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                FloatingActionButton(
-                  onPressed: () => restartGame(),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                  foregroundColor:
-                      Theme.of(context).colorScheme.onSurfaceVariant,
-                  child: const Icon(Icons.restart_alt_rounded),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(2),
-                ),
+                // FloatingActionButton(
+                //   onPressed: () => game.restartGame(game, context),
+                //   backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                //   foregroundColor:
+                //       Theme.of(context).colorScheme.onSurfaceVariant,
+                //   child: const Icon(Icons.restart_alt_rounded),
+                // ),
+                // const Padding(
+                //   padding: EdgeInsets.all(2),
+                // ),
                 FloatingActionButton.extended(
                   heroTag: 'btn2',
                   onPressed: () => startGame(),
@@ -299,36 +253,52 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
               ),
             ),
             ReorderableListView.builder(
+              buildDefaultDragHandles: false,
               shrinkWrap: true,
               itemBuilder: (context, index) => Card(
                 key: ValueKey(index),
                 child: ListTile(
                   title: Text(game.players[index]),
-                  trailing: Visibility(
-                    visible: index == game.dealer,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 24),
-                      child: Chip(
-                          elevation: 0,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          avatar: Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Icon(
-                              FluentIcons.board_games_20_filled,
-                              color: Theme.of(context)
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Visibility(
+                        visible: index == game.dealer,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 24),
+                          child: Chip(
+                              elevation: 0,
+                              backgroundColor: Theme.of(context)
                                   .colorScheme
-                                  .onSecondaryContainer,
-                            ),
-                          ),
-                          label: const Text('Dealer'),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide.none,
-                            borderRadius: BorderRadius.circular(100),
-                          )
-                          // padding: EdgeInsets.all(1),
-                          ),
-                    ),
+                                  .secondaryContainer,
+                              avatar: Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Icon(
+                                  FluentIcons.board_games_20_filled,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSecondaryContainer,
+                                ),
+                              ),
+                              label: const Text('Dealer'),
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide.none,
+                                borderRadius: BorderRadius.circular(100),
+                              )
+                              // padding: EdgeInsets.all(1),
+                              ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !isRunning,
+                        child: ReorderableDragStartListener(
+                          index: index,
+                          child: const Icon(Icons.drag_indicator_outlined),
+                        ),
+                      ),
+                    ],
                   ),
                   subtitle: Text('${index + 1}. Player'),
                   leading: const Icon(Icons.person),

@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:wizard_points/shared/appbar.dart';
+
+import '../../services/models.dart';
 
 class NewSectionScreen extends StatefulWidget {
   final VoidCallback initCallback;
@@ -66,92 +69,98 @@ class _NewSectionScreenState extends State<NewSectionScreen>
 
     return WillPopScope(
       onWillPop: () async => false,
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Flex(
-            direction: Axis.vertical,
-            children: [
-              Text(
-                'New ${widget.title}',
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+      child: SafeArea(
+        top: true,
+        bottom: false,
+        left: false,
+        right: false,
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                Text(
+                  'New ${widget.title}',
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Visibility(
-                visible: widget.child == null,
-                child: const Spacer(),
-              ),
-              ConstrainedBox(
-                constraints: BoxConstraints.expand(
-                  // width: size + 150,
-                  height: size + 100,
+                Visibility(
+                  visible: widget.child == null,
+                  child: const Spacer(),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(45),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Center(
-                        heightFactor: 1,
-                        widthFactor: 1,
-                        child: SizedBox(
-                          height: size,
-                          width: size,
-                          child: CircularProgressIndicator(
-                            color: widget.color,
-                            value: controller.value,
-                            strokeWidth: 30,
+                ConstrainedBox(
+                  constraints: BoxConstraints.expand(
+                    // width: size + 150,
+                    height: size + 100,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(45),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Center(
+                          heightFactor: 1,
+                          widthFactor: 1,
+                          child: SizedBox(
+                            height: size,
+                            width: size,
+                            child: CircularProgressIndicator(
+                              color: widget.color,
+                              value: controller.value,
+                              strokeWidth: 30,
+                            ),
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              // '${widget.game.currentRound} / ${widget.game.getMaxRounds()}',
-                              '${widget.current} / ${widget.max}',
-                              style: const TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              widget.title,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                          ],
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                // '${widget.game.currentRound} / ${widget.game.getMaxRounds()}',
+                                '${widget.current} / ${widget.max}',
+                                style: const TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                widget.title,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: widget.child == null,
-                child: const Spacer(),
-              ),
-              Visibility(
-                visible: widget.child != null,
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: widget.child ?? Container(),
+                Visibility(
+                  visible: widget.child == null,
+                  child: const Spacer(),
+                ),
+                Visibility(
+                  visible: widget.child != null,
+                  child: Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: widget.child ?? Container(),
+                    ),
                   ),
                 ),
-              ),
-              TextButton.icon(
-                onPressed: () {
-                  t.cancel();
-                  widget.navigateCallback.call();
-                },
-                icon: const Icon(Icons.skip_next_rounded),
-                label: const Text('Skip'),
-              ),
-            ],
+                TextButton.icon(
+                  onPressed: () {
+                    t.cancel();
+                    widget.navigateCallback.call();
+                  },
+                  icon: const Icon(Icons.skip_next_rounded),
+                  label: const Text('Skip'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -37,8 +37,8 @@ class _GameFinishedScreenState extends State<GameFinishedScreen> {
     }
 
     return Scaffold(
-      appBar: getAppBar(
-          context, 'Wizard Points', false, false, widget.game, updatePage),
+      appBar:
+          getAppBar(context, 'Wizard Points', false, widget.game, updatePage),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Flex(

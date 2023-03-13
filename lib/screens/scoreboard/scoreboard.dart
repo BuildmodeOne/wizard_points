@@ -20,8 +20,7 @@ class _ScoreboardState extends State<Scoreboard> {
     }
 
     return Scaffold(
-      appBar:
-          getAppBar(context, 'Scoreboard', true, false, widget.game, update),
+      appBar: getAppBar(context, 'Scoreboard', false, widget.game, update),
       body: ScoreboardWidget(
         game: widget.game,
       ),

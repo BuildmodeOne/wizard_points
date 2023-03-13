@@ -17,7 +17,7 @@ class _RestartGameDialogState extends State<RestartGameDialog> {
   void initState() {
     super.initState();
 
-    keepPlayers = false;
+    keepPlayers = true;
   }
 
   @override
