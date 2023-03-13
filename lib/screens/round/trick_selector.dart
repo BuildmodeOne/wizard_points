@@ -55,7 +55,7 @@ class _TrickSelectorState extends State<TrickSelector> {
   @override
   Widget build(BuildContext context) {
     if (_gyroscopeValues != null) {
-      rotation += _gyroscopeValues![1] * 10;
+      rotation += _gyroscopeValues![2] * 10;
     }
 
     var playerButtons = <Widget>[];
