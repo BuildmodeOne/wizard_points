@@ -44,6 +44,7 @@ dependencies:
   toggle_switch: ^2.0.1
   fluentui_system_icons: ^1.1.190
   confetti: ^0.7.0
+  sensors_plus: ^2.0.2
 
 dev_dependencies:
   flutter_test:

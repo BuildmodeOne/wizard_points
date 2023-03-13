@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:wizard_points/screens/game/game_finished.dart';
 import 'package:wizard_points/screens/round/elements/player_button.dart';
 import 'package:wizard_points/screens/round/select_prediction.dart';
@@ -24,9 +26,33 @@ class _TrickSelectorState extends State<TrickSelector> {
   final radius = 130;
 
   final buttonOffset = 120 / 2;
+  late StreamSubscription<GyroscopeEvent> _gyroscopeSubscription;
+
+  List<double>? _gyroscopeValues;
+
+  @override
+  void initState() {
+    super.initState();
+    _gyroscopeSubscription = gyroscopeEvents.listen(
+      (GyroscopeEvent event) {
+        setState(() {
+          _gyroscopeValues = <double>[event.x, event.y, event.z];
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _gyroscopeSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final gyroscope =
+        _gyroscopeValues?.map((double v) => v.toStringAsFixed(2)).toList();
+
     var playerButtons = <Widget>[];
 
     var round = widget.game.rounds[widget.game.currentRound - 1];
@@ -169,6 +195,11 @@ class _TrickSelectorState extends State<TrickSelector> {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: (gyroscope ?? []).length,
+                      itemBuilder: (context, index) => Text(gyroscope![index]),
+                    ),
                     Text(
                       '${widget.game.currentRound}. Round',
                       style: const TextStyle(

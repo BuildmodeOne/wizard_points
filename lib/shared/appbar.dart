@@ -42,12 +42,11 @@ AppBar getAppBar(
       ),
       IconButton(
         onPressed: () async {
-          Navigator.pushAndRemoveUntil(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => SettingsScreen(settings: game!.settings),
             ),
-            (_) => false,
           ).then((value) {
             if (action != null) {
               action();
