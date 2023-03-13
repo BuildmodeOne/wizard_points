@@ -61,6 +61,10 @@ class _TrickSelectorState extends State<TrickSelector> {
       var player = widget.game.players[i];
       var angle = 360 / widget.game.players.length * i * -1 + 180;
 
+      if (_gyroscopeValues != null) {
+        angle += _gyroscopeValues![1] * 10;
+      }
+
       var x = radius * sin(pi * 2 * angle / 360) +
           MediaQuery.of(context).size.width / 2 -
           buttonOffset;
