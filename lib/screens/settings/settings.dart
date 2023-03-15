@@ -134,6 +134,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )
                     ],
                   ),
+
+                  // reward if player gets all tricks
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  IgnorePointer(
+                    ignoring: settings.alwaysRewardTricks,
+                    child: AnimatedOpacity(
+                      opacity: !settings.alwaysRewardTricks ? 1 : 0.3,
+                      duration: const Duration(milliseconds: 250),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(
+                                left: 8.0, right: 8.0, bottom: 4.0),
+                            child: Icon(FluentIcons.reward_20_filled),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Reward for all tricks despite wrong prediction',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  'If a player wins all tricks in a round despite a wrong prediction, the tricks are rewarded. This is only available with more than 1 card.',
+                                  textAlign: TextAlign.justify,
+                                  style: TextStyle(
+                                    fontSize: explainSize,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                          ),
+                          Switch(
+                            value: settings.rewardAllTricksDespitePrediction &&
+                                !settings.alwaysRewardTricks,
+                            onChanged: (value) {
+                              settings.rewardAllTricksDespitePrediction = value;
+                              storage.setItem('settings', settings.toJson());
+
+                              setState(() {});
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                   ),
@@ -238,6 +295,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                   ),

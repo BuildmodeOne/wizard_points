@@ -176,6 +176,7 @@ class GameSettings {
   bool alwaysRewardTricks = false;
   bool allowZeroPrediction = false;
   bool plusMinusOneVariant = true;
+  bool rewardAllTricksDespitePrediction = false;
 
   int pointsForTricks = 10;
   int pointsForCorrectPrediction = 20;
@@ -222,6 +223,14 @@ class Round {
     points += ((predictions[playerIndex] ?? 0) - (getResultsCount(playerIndex)))
             .abs() *
         -settings.pointsForTricks;
+
+    if (!correctPrediction &&
+        getResultsCount(playerIndex) == results.length &&
+        results.length > 1 &&
+        settings.rewardAllTricksDespitePrediction) {
+      // override points!
+      points = getResultsCount(playerIndex) * settings.pointsForTricks;
+    }
 
     return points;
   }
