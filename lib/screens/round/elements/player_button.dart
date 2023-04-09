@@ -55,7 +55,7 @@ class PlayerButton extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      (round.predictions[playerIndex] ?? 0).toString(),
+                      ('${round.getResultsCount(playerIndex)}/${round.predictions[playerIndex] ?? 0}'),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
