@@ -2,6 +2,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/config.dart';
 import '../../services/models.dart';
@@ -69,8 +70,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       Switch(
                         value: themeNotifier.isDark,
-                        onChanged: (value) {
+                        onChanged: (value) async {
                           themeNotifier.setTheme(value);
+
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setBool('theme', themeNotifier.isDark);
                         },
                       )
                     ],
