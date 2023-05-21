@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:wizard_points/screens/game/game_finished.dart';
 import 'package:wizard_points/screens/round/elements/player_button.dart';

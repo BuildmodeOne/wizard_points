@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wizard_points/shared/appbar.dart';
-
-import '../../services/models.dart';
 
 class NewSectionScreen extends StatefulWidget {
   final VoidCallback initCallback;

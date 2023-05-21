@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:collection';
 import 'package:localstorage/localstorage.dart';
 
 import '../screens/player/players_screen.dart';
