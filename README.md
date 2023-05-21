@@ -4,14 +4,13 @@ Wizard Points is a simple web app (optimized for mobile usage) that allows you t
 
 Visit the [website](https://wizardpoints.app/#/) ([wizardpoints.app](https://wizardpoints.app/#/)) to get started.
 
-
 ## Features
 
 - Up to 6 players
 - Keep track of dealer and player order
-- Ajustable settings
-    - Personalization
-    - Game rules
+- Adjustable settings
+  - Personalization
+  - Game rules
 - Intuitive and simple UI
 - Progressive Web App (PWA)
 
@@ -41,3 +40,58 @@ Visit the [website](https://wizardpoints.app/#/) ([wizardpoints.app](https://wiz
      alt="Settings screen"
      width=330px
      style="float: left; margin: 5px;"/>
+
+<div style="clear:both;"></div>
+
+## Contributing
+
+### GitHub
+
+- Create a fork of the repository
+- Clone the forked repository
+- Create a new branch
+- Make your changes
+- Push your changes to your forked repository
+- Create a pull request and describe your changes
+
+### Flutter
+
+- Install the [Flutter SDK](https://flutter.dev/docs/get-started/install).
+- Check your Flutter installation
+
+    ```bash
+    flutter doctor
+    ```
+
+- Switch to the `stable` channel
+
+    ```bash
+    flutter channel stable
+    flutter upgrade
+    ```
+
+- Install the dependencies
+
+    ```bash
+    flutter pub get
+    ```
+
+- Run the app
+
+    ```bash
+    flutter run [-d Chrome]
+    ```
+
+## Deployment
+
+- Build the app using CanvasKit in release mode
+
+    ```bash
+    flutter build web --web-renderer canvaskit --release
+    ```
+
+- Deploy the app to Firebase
+
+    ```bash
+    firebase deploy
+    ```
