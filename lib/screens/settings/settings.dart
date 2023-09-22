@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/config.dart';
@@ -21,6 +25,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var settings = widget.settings;
 
     var storage = LocalStorage('wizard_points');
+
+    Future<String> _localPath() async {
+      final directory = await getApplicationDocumentsDirectory();
+
+      return directory.path;
+    }
+
+    Future<File> _localFile(String name) async {
+      final path = await _localPath();
+      String cleanName = name.replaceAll(' ', '_').toLowerCase();
+
+      return File('$path/$cleanName.json');
+    }
+
+    Future<String> _getGameNameDialog() async {
+      String? gameName;
+
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Game Name'),
+            content: TextField(
+              onChanged: (value) {
+                gameName = value;
+              },
+              decoration: const InputDecoration(
+                hintText: 'Game Name',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+
+      return gameName ?? '';
+    }
 
     return FutureBuilder(
       future: storage.ready,
@@ -185,6 +239,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
+
+                  const Padding(
+                    padding: EdgeInsets.all(6.0),
+                  ),
+
+                  // LOAD AND SAVE GAME
+                  SettingsGroup(
+                    title: 'Load and Save Game',
+                    spacing: 8,
+                    children: [
+                      // load game
+                      SettingsButton(
+                        title: 'Load Game',
+                        description: 'Load a saved game',
+                        icon: FluentIcons.arrow_download_20_regular,
+                        onPressed: () async {
+                          print('load game');
+                        },
+                      ),
+
+                      // save game
+                      SettingsButton(
+                        title: 'Save Game',
+                        description: 'Save the current game',
+                        icon: FluentIcons.arrow_upload_20_regular,
+                        onPressed: () async {
+                          print('save game');
+
+                          // String gameName = await _getGameNameDialog();
+
+                          // if (kIsWeb) {
+                          //   return;
+                          // }
+
+                          // final file = await _localFile(gameName);
+                          // await file.writeAsString(
+                          //   settings.toJson().toString(),
+                          // );
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -210,10 +306,12 @@ class SettingsGroup extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
+    this.spacing = 16.0,
   });
 
   final String title;
   final List<Widget> children;
+  final double spacing;
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +322,7 @@ class SettingsGroup extends StatelessWidget {
           title: title,
         ),
         Wrap(
-          runSpacing: 16,
+          runSpacing: spacing,
           children: children,
         )
       ],
@@ -263,7 +361,7 @@ class SettingsElement extends StatelessWidget {
   final String title;
   final String? description;
   final IconData icon;
-  final Widget child;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -305,8 +403,39 @@ class SettingsElement extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.only(right: 12),
         ),
-        child,
+        child ?? const SizedBox(),
       ],
+    );
+  }
+}
+
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({
+    super.key,
+    required this.title,
+    this.description,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String title;
+  final String? description;
+  final IconData icon;
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: SettingsElement(
+          title: title,
+          description: description,
+          icon: icon,
+          child: null,
+        ),
+      ),
     );
   }
 }
