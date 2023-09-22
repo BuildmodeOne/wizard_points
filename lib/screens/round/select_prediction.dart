@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:wizard_points/screens/round/predicton_unavailable.dart';
+import 'package:wizard_points/screens/round/prediction_unavailable.dart';
 import 'package:wizard_points/screens/round/trick_selector.dart';
 import 'package:wizard_points/shared/appbar.dart';
 import 'package:wizard_points/shared/filled_icon_button.dart';
@@ -156,8 +156,9 @@ class _SelectPredictionState extends State<SelectPrediction> {
                         icon: const Icon(Icons.remove_rounded),
                       ),
                       ScrollConfiguration(
-                        behavior:
-                            MobileScrollBehaviour().copyWith(scrollbars: false),
+                        behavior: MobileScrollBehaviour().copyWith(
+                          scrollbars: false,
+                        ),
                         child: NumberPicker(
                           minValue: 0,
                           maxValue: game.currentRound,
