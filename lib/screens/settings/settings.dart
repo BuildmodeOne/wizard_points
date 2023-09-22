@@ -18,9 +18,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    var headerSize = 16.0;
-    var explainSize = 12.0;
-
     var settings = widget.settings;
 
     var storage = LocalStorage('wizard_points');
@@ -40,35 +37,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : Theme.of(context).colorScheme.onPrimary,
               elevation: 5,
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.only(
+                top: 8.0,
+                left: 8,
+                right: 12,
+                bottom: 32,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // PERSONALISATION SETTINGS
-                  const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Text(
-                      'Personalization',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  SettingsGroup(
+                    title: 'Personalization',
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Icon(Icons.color_lens_rounded),
-                      ),
-                      Expanded(
-                        child: Text('Dark Mode',
-                            style: TextStyle(
-                              fontSize: headerSize,
-                            )),
-                      ),
-                      Switch(
+                      SettingsSwitch(
+                        title: 'Dark Mode',
                         value: themeNotifier.isDark,
                         onChanged: (value) async {
                           themeNotifier.setTheme(value);
@@ -76,58 +59,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           final prefs = await SharedPreferences.getInstance();
                           prefs.setBool('theme', themeNotifier.isDark);
                         },
-                      )
+                        icon: Icons.color_lens_rounded,
+                      ),
                     ],
                   ),
+
                   const Padding(
-                    padding: EdgeInsets.all(12.0),
+                    padding: EdgeInsets.all(6.0),
                   ),
 
                   // GAME SETTINGS
-                  const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Text(
-                      'Game Settings',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  // reward only if correct
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  SettingsGroup(
+                    title: 'Game Settings',
                     children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
-                        child: Icon(FluentIcons.lightbulb_person_20_filled),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Always reward tricks',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'Players always get points for the number of tricks, even if they predicted them wrong',
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: explainSize,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 12),
-                      ),
-                      Switch(
+                      // reward only if correct
+                      SettingsSwitch(
+                        title: 'Always reward tricks',
+                        description:
+                            'Players always get points for the number of tricks, even if they predicted them wrong',
                         value: settings.alwaysRewardTricks,
                         onChanged: (value) {
                           settings.alwaysRewardTricks = value;
@@ -135,52 +84,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                           setState(() {});
                         },
-                      )
-                    ],
-                  ),
+                        icon: FluentIcons.lightbulb_person_20_filled,
+                      ),
 
-                  // reward if player gets all tricks
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  IgnorePointer(
-                    ignoring: settings.alwaysRewardTricks,
-                    child: AnimatedOpacity(
-                      opacity: !settings.alwaysRewardTricks ? 1 : 0.3,
-                      duration: const Duration(milliseconds: 250),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(
-                                left: 8.0, right: 8.0, bottom: 4.0),
-                            child: Icon(FluentIcons.reward_20_filled),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Reward for all tricks despite wrong prediction',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  'If a player wins all tricks in a round despite a wrong prediction, the tricks are rewarded. This is only available with more than 1 card.',
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontSize: explainSize,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 12),
-                          ),
-                          Switch(
+                      // reward if player gets all tricks
+                      IgnorePointer(
+                        ignoring: settings.alwaysRewardTricks,
+                        child: AnimatedOpacity(
+                          opacity: !settings.alwaysRewardTricks ? 1 : 0.3,
+                          duration: const Duration(milliseconds: 250),
+                          child: SettingsSwitch(
+                            title:
+                                'Reward for all tricks despite wrong prediction',
+                            description:
+                                'If a player wins all tricks in a round despite a wrong prediction, the tricks are rewarded. This is only available with more than 1 card.',
                             value: settings.rewardAllTricksDespitePrediction &&
                                 !settings.alwaysRewardTricks,
                             onChanged: (value) {
@@ -189,50 +106,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               setState(() {});
                             },
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-
-                  // plus minus one
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
-                        child: Icon(FluentIcons.clipboard_20_filled),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Plus/minus one',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'The sum of predictions must not add up to the amount of cards, but can be less or more',
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: explainSize,
-                              ),
-                            ),
-                          ],
+                            icon: FluentIcons.reward_20_filled,
+                          ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 12),
-                      ),
-                      Switch(
+
+                      // plus minus one
+                      SettingsSwitch(
+                        title: 'Plus/minus one',
+                        description:
+                            'The sum of predictions must not add up to the amount of cards, but can be less or more',
                         value: settings.plusMinusOneVariant,
                         onChanged: (value) {
                           settings.plusMinusOneVariant = value;
@@ -240,52 +123,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                           setState(() {});
                         },
-                      )
-                    ],
-                  ),
+                        icon: FluentIcons.clipboard_20_filled,
+                      ),
 
-                  // always allow 0 predictions for last player even if the sum == currentRound
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  IgnorePointer(
-                    ignoring: !settings.plusMinusOneVariant,
-                    child: AnimatedOpacity(
-                      opacity: settings.plusMinusOneVariant ? 1 : 0.3,
-                      duration: const Duration(milliseconds: 250),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(
-                                left: 8.0, right: 8.0, bottom: 4.0),
-                            child: Icon(FluentIcons.clipboard_error_20_filled),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Allow zero prediciton',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  'Zero predictions allowed for last player, even if the predictions sum up to the amount of cards',
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontSize: explainSize,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 12),
-                          ),
-                          Switch(
+                      // always allow 0 predictions for last player even if the sum == currentRound
+                      IgnorePointer(
+                        ignoring: !settings.plusMinusOneVariant,
+                        child: AnimatedOpacity(
+                          opacity: settings.plusMinusOneVariant ? 1 : 0.3,
+                          duration: const Duration(milliseconds: 250),
+                          child: SettingsSwitch(
+                            title: 'Allow zero prediction',
+                            description:
+                                'Zero predictions allowed for last player, even if the predictions sum up to the amount of cards',
                             value: settings.allowZeroPrediction &&
                                 settings.plusMinusOneVariant,
                             onChanged: (value) {
@@ -294,128 +144,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               setState(() {});
                             },
-                          )
-                        ],
+                            icon: FluentIcons.clipboard_error_20_filled,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
 
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  // points for correct prediction
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
-                        child: Icon(FluentIcons.predictions_20_filled),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Correct prediction',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'Points for the correct prediction of tricks',
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: explainSize,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 12),
-                      ),
-                      SizedBox(
-                        width: 50,
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          autocorrect: false,
-                          initialValue:
-                              settings.pointsForCorrectPrediction.toString(),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                          onChanged: (value) {
-                            try {
-                              settings.pointsForCorrectPrediction =
-                                  int.parse(value);
+                      // points for correct prediction
+                      SettingsNumberForm(
+                        title: 'Correct prediction',
+                        description:
+                            'Points for the correct prediction of tricks',
+                        initialValue:
+                            settings.pointsForCorrectPrediction.toString(),
+                        icon: FluentIcons.predictions_20_filled,
+                        onChanged: (value) {
+                          try {
+                            settings.pointsForCorrectPrediction =
+                                int.parse(value);
 
-                              storage.setItem('settings', settings.toJson());
-                              // ignore: empty_catches
-                            } catch (e) {}
-                          },
-                        ),
+                            storage.setItem('settings', settings.toJson());
+                            // ignore: empty_catches
+                          } catch (e) {}
+                        },
                       ),
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  // points for tricks
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
-                        child: Icon(FluentIcons.sparkle_20_filled),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Tricks',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'Points for each trick',
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: explainSize,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 12),
-                      ),
-                      SizedBox(
-                        width: 50,
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          autocorrect: false,
-                          initialValue: settings.pointsForTricks.toString(),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                          onChanged: (value) {
-                            try {
-                              settings.pointsForTricks = int.parse(value);
-                              storage.setItem('settings', settings.toJson());
 
-                              // ignore: empty_catches
-                            } catch (e) {}
-                          },
-                        ),
-                      )
+                      // points for tricks
+                      SettingsNumberForm(
+                        title: 'Tricks',
+                        description: 'Points for each trick',
+                        initialValue: settings.pointsForTricks.toString(),
+                        icon: FluentIcons.sparkle_20_filled,
+                        onChanged: (value) {
+                          try {
+                            settings.pointsForTricks = int.parse(value);
+                            storage.setItem('settings', settings.toJson());
+
+                            // ignore: empty_catches
+                          } catch (e) {}
+                        },
+                      ),
                     ],
                   ),
                 ],
@@ -434,6 +201,181 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text('Error'),
         );
       },
+    );
+  }
+}
+
+class SettingsGroup extends StatelessWidget {
+  const SettingsGroup({
+    super.key,
+    required this.title,
+    required this.children,
+  });
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsHeader(
+          title: title,
+        ),
+        Wrap(
+          runSpacing: 16,
+          children: children,
+        )
+      ],
+    );
+  }
+}
+
+class SettingsHeader extends StatelessWidget {
+  const SettingsHeader({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsElement extends StatelessWidget {
+  const SettingsElement({
+    super.key,
+    required this.title,
+    this.description,
+    required this.icon,
+    required this.child,
+  });
+
+  final String title;
+  final String? description;
+  final IconData icon;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    var headerSize = 16.0;
+    var explainSize = 12.0;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 12.0, bottom: 4.0),
+          child: Icon(icon),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: headerSize,
+                ),
+              ),
+              Visibility(
+                visible: description != null,
+                child: Text(
+                  description ?? '',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: explainSize,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 12),
+        ),
+        child,
+      ],
+    );
+  }
+}
+
+class SettingsSwitch extends StatelessWidget {
+  const SettingsSwitch({
+    super.key,
+    required this.title,
+    this.description,
+    required this.value,
+    required this.onChanged,
+    required this.icon,
+  });
+
+  final String title;
+  final String? description;
+  final bool value;
+  final IconData icon;
+  final Function(bool) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsElement(
+      title: title,
+      description: description,
+      icon: icon,
+      child: Switch(
+        value: value,
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class SettingsNumberForm extends StatelessWidget {
+  const SettingsNumberForm({
+    super.key,
+    required this.title,
+    this.description,
+    required this.initialValue,
+    required this.icon,
+    required this.onChanged,
+  });
+
+  final String title;
+  final String? description;
+  final String initialValue;
+  final IconData icon;
+  final Function(String) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsElement(
+      title: title,
+      icon: icon,
+      description: description,
+      child: SizedBox(
+        width: 50,
+        child: TextFormField(
+          textAlign: TextAlign.center,
+          autocorrect: false,
+          initialValue: initialValue,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
+          onChanged: onChanged,
+        ),
+      ),
     );
   }
 }
