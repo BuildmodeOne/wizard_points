@@ -252,6 +252,37 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                 ],
               ),
             ),
+            Visibility(
+              visible: !isRunning && game.players.isEmpty,
+              child: Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 200,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        FluentIcons.people_team_20_regular,
+                        size: 50,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                      ),
+                      Text(
+                        'Add at least 3 players to start a game.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             ReorderableListView.builder(
               buildDefaultDragHandles: false,
               shrinkWrap: true,
@@ -300,7 +331,10 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
                       ),
                     ],
                   ),
-                  subtitle: Text('${index + 1}. Player'),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: Text('${index + 1}. Player'),
+                  ),
                   leading: const Icon(Icons.person),
                   onTap: () {
                     editPlayer(index);
