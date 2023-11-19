@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 // import 'dart:html';
 import 'package:flutter/material.dart';
@@ -111,10 +112,10 @@ class _WizardPointAppState extends State<WizardPointApp> {
     var game = widget.game;
 
     // //  temp:
-    // var devGame =
-    //     '{"players":["Jutta","Stefan","Johanna","Daniel","Philipp","Eva"],"rounds":[{"currentTrick":0,"predictions":{"1":0,"2":0,"3":0,"4":0,"5":0,"0":0},"results":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":1,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":2,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":3,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":4,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":5,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":6,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":7,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":8,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}}],"dealer":1,"settings":{"alwaysRewardTricks":false,"allowZeroPrediction":false,"pointsForTricks":10,"pointsForCorrectPrediction":20},"currentRound":10}';
-    // game = Game.fromJson(jsonDecode(devGame));
-    // game.settings = widget.game.settings;
+    var devGame =
+        '{"players":["Jutta","Stefan","Johanna","Daniel","Philipp","Eva"],"rounds":[{"currentTrick":0,"predictions":{"1":0,"2":0,"3":0,"4":0,"5":0,"0":0},"results":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":1,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":2,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":3,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":4,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":5,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":6,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":7,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}},{"currentTrick":8,"predictions":{"2":0,"3":0,"4":0,"5":0,"0":0,"1":0},"results":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0}}],"dealer":1,"settings":{"alwaysRewardTricks":false,"allowZeroPrediction":false,"pointsForTricks":10,"pointsForCorrectPrediction":20},"currentRound":10}';
+    game = Game.fromJson(jsonDecode(devGame));
+    game.settings = widget.game.settings;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

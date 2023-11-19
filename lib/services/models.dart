@@ -39,6 +39,10 @@ class Game {
     storage.setItem('game', toJson());
   }
 
+  bool isRunning() {
+    return currentRound > 0 && currentRound < getMaxRounds();
+  }
+
   Map<String, int> getScores() {
     var scores = <String, int>{};
 

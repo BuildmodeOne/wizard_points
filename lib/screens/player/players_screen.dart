@@ -24,8 +24,7 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
   @override
   Widget build(BuildContext context) {
     var game = widget.game;
-    var isRunning =
-        game.currentRound > 0 && game.currentRound < game.getMaxRounds();
+    var isRunning = game.isRunning();
 
     void onReorder(int oldIndex, int newIndex) {
       if (oldIndex < newIndex) {
@@ -200,16 +199,6 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // FloatingActionButton(
-                //   onPressed: () => game.restartGame(game, context),
-                //   backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                //   foregroundColor:
-                //       Theme.of(context).colorScheme.onSurfaceVariant,
-                //   child: const Icon(Icons.restart_alt_rounded),
-                // ),
-                // const Padding(
-                //   padding: EdgeInsets.all(2),
-                // ),
                 FloatingActionButton.extended(
                   heroTag: 'btn2',
                   onPressed: () => startGame(),

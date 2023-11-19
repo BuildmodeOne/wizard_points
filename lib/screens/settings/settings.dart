@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
@@ -253,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsButton(
                         title: 'Load Game',
                         description: 'Load a saved game',
-                        icon: FluentIcons.arrow_download_20_regular,
+                        icon: FluentIcons.arrow_upload_20_regular,
                         onPressed: () async {
                           print('load game');
                         },
@@ -263,20 +262,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsButton(
                         title: 'Save Game',
                         description: 'Save the current game',
-                        icon: FluentIcons.arrow_upload_20_regular,
+                        icon: FluentIcons.arrow_download_20_regular,
                         onPressed: () async {
                           print('save game');
 
-                          // String gameName = await _getGameNameDialog();
+                          print(settings.toJson());
+                          var storage = LocalStorage('wizard_points');
+                          await storage.ready;
 
-                          // if (kIsWeb) {
-                          //   return;
-                          // }
-
-                          // final file = await _localFile(gameName);
-                          // await file.writeAsString(
-                          //   settings.toJson().toString(),
-                          // );
+                          var gameJson = storage.getItem('game');
+                          print(gameJson);
                         },
                       ),
                     ],

@@ -34,22 +34,28 @@ class EditPlayerDialog extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(8),
           ),
-          TextButton.icon(
-            onPressed: () {
-              game.dealer = game.players.indexOf(player);
-              Navigator.pop(context, nameController.text);
-            },
-            icon: const Icon(FluentIcons.board_games_20_filled),
-            label: const Text('Dealer'),
+          Visibility(
+            visible: !game.isRunning(),
+            child: TextButton.icon(
+              onPressed: () {
+                game.dealer = game.players.indexOf(player);
+                Navigator.pop(context, nameController.text);
+              },
+              icon: const Icon(FluentIcons.board_games_20_filled),
+              label: const Text('Dealer'),
+            ),
           ),
         ],
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
+        Visibility(
+          visible: !game.isRunning(),
+          child: IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
         ),
         TextButton(
           onPressed: () {
