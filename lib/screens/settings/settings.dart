@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:wizard_points/screens/settings/legal/license_page.dart';
 import 'package:wizard_points/shared/appbar.dart';
 
 import '../../services/config.dart';
@@ -14,6 +16,13 @@ class SettingsScreen extends StatefulWidget {
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+Future<void> launch(String url, {bool isNewTab = true}) async {
+  await launchUrl(
+    Uri.parse(url),
+    webOnlyWindowName: isNewTab ? '_blank' : '_self',
+  );
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -28,11 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Settings'),
-              foregroundColor: getAppBarForegroundColor(context),
-              backgroundColor: getAppBarBackgroundColor(context),
-            ),
+            appBar: getTitleAppBar(context, 'Settings'),
             backgroundColor: getAppBarBackgroundColor(context),
             body: Container(
               color: Theme.of(context).colorScheme.background,
@@ -41,10 +46,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SliverFillRemaining(
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        top: 8.0,
+                        top: 8,
                         left: 8,
                         right: 12,
-                        bottom: 32,
+                        bottom: 8,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,6 +202,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     // ignore: empty_catches
                                   } catch (e) {}
                                 },
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  launch('/assets/legal/imprint.html');
+                                },
+                                child: const Text('Imprint'),
+                              ),
+                              const Text(' | '),
+                              TextButton(
+                                onPressed: () {
+                                  launch('/assets/legal/privacy.html');
+                                },
+                                child: const Text('Privacy Policy'),
+                              ),
+                              const Text(' | '),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CustomLicensePage(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Licenses'),
                               ),
                             ],
                           ),

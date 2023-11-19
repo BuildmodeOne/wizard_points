@@ -31,7 +31,10 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 
-/build
+build/*
+!build/web/
+build/web/*
+!build/web/robots.txt
 # Symbolication related
 app.*.symbols
 

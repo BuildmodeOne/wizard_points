@@ -71,3 +71,12 @@ AppBar getAppBar(BuildContext context, bool showScoreboard, Game? game,
     actions: getAppBarActions(context, showScoreboard, game, action),
   );
 }
+
+AppBar getTitleAppBar(BuildContext context, String text) {
+  return AppBar(
+    clipBehavior: Clip.none,
+    backgroundColor: getAppBarBackgroundColor(context),
+    foregroundColor: getAppBarForegroundColor(context),
+    title: Text(text),
+  );
+}
