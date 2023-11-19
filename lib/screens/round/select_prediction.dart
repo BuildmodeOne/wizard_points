@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:wizard_points/screens/cards/cards_card.dart';
+import 'package:wizard_points/screens/cards/dealer_card.dart';
+import 'package:wizard_points/screens/cards/predict_card_button.dart';
 import 'package:wizard_points/screens/round/prediction_unavailable.dart';
 import 'package:wizard_points/screens/round/trick_selector.dart';
 import 'package:wizard_points/shared/appbar.dart';
@@ -7,7 +10,6 @@ import 'package:wizard_points/shared/filled_icon_button.dart';
 
 import '../../services/models.dart';
 import '../../services/scroll_behaviour.dart';
-import '../../shared/dealer.dart';
 
 class SelectPrediction extends StatefulWidget {
   final Game game;
@@ -73,163 +75,171 @@ class _SelectPredictionState extends State<SelectPrediction> {
       });
     }
 
+    Future<void> predict() async {
+      if (predictions[index] == null) {
+        predictions[index] = 0;
+      }
+
+      if (invalidPrediction) {
+        await showDialog(
+          context: context,
+          builder: (context) => PredictionNotAllowed(
+            prediction: currentValue,
+          ),
+        );
+
+        return;
+      }
+
+      if (isLast) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TrickSelector(
+              game: game,
+            ),
+          ),
+          (_) => false,
+        );
+        return;
+      }
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SelectPrediction(
+            game: game,
+            index: game.getBoundedIndex(index + 1),
+          ),
+        ),
+        (_) => false,
+      );
+    }
+
     return Scaffold(
-      appBar: getAppBar(context, 'Predict tricks', true, game, update),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          if (predictions[index] == null) {
-            predictions[index] = 0;
-          }
-
-          if (invalidPrediction) {
-            await showDialog(
-              context: context,
-              builder: (context) => PredictionNotAllowed(
-                prediction: currentValue,
-              ),
-            );
-
-            return;
-          }
-
-          if (isLast) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TrickSelector(
-                  game: game,
+      appBar: getAppBar(context, true, game, update),
+      backgroundColor: getAppBarBackgroundColor(context),
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                 ),
-              ),
-              (_) => false,
-            );
-            return;
-          }
-
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SelectPrediction(
-                game: game,
-                index: game.getBoundedIndex(index + 1),
-              ),
-            ),
-            (_) => false,
-          );
-        },
-        label: const Text('Predict'),
-        icon: const Icon(Icons.check_rounded),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-            ),
-            const Text(
-              'Predict your tricks,',
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-            Text(
-              player,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
+                const Text(
+                  'Predict your tricks,',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  player,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+                Expanded(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      FilledIconButton(
-                        onPressed: () {
-                          setPrediction(currentValue - 1);
-                        },
-                        icon: const Icon(Icons.remove_rounded),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FilledIconButton(
+                            onPressed: () {
+                              setPrediction(currentValue - 1);
+                            },
+                            icon: const Icon(Icons.remove_rounded),
+                          ),
+                          ScrollConfiguration(
+                            behavior: MobileScrollBehaviour().copyWith(
+                              scrollbars: false,
+                            ),
+                            child: NumberPicker(
+                              minValue: 0,
+                              maxValue: game.currentRound,
+                              haptics: false,
+                              onChanged: (value) {
+                                setPrediction(value);
+                              },
+                              value: currentValue,
+                            ),
+                          ),
+                          FilledIconButton(
+                            onPressed: () {
+                              setPrediction(currentValue + 1);
+                            },
+                            icon: const Icon(Icons.add_rounded),
+                          ),
+                        ],
                       ),
-                      ScrollConfiguration(
-                        behavior: MobileScrollBehaviour().copyWith(
-                          scrollbars: false,
+                      AnimatedOpacity(
+                        opacity: invalidPrediction ? 1 : 0,
+                        duration: const Duration(milliseconds: 150),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 3.0,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.warning_rounded,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                ),
+                                Text(
+                                  'This prediction is not allowed',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onErrorContainer,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: NumberPicker(
-                          minValue: 0,
-                          maxValue: game.currentRound,
-                          haptics: false,
-                          onChanged: (value) {
-                            setPrediction(value);
-                          },
-                          value: currentValue,
-                        ),
-                      ),
-                      FilledIconButton(
-                        onPressed: () {
-                          setPrediction(currentValue + 1);
-                        },
-                        icon: const Icon(Icons.add_rounded),
                       ),
                     ],
                   ),
-                  AnimatedOpacity(
-                    opacity: invalidPrediction ? 1 : 0,
-                    duration: const Duration(milliseconds: 150),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.errorContainer,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 3.0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.warning_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onErrorContainer,
-                            ),
-                            Text(
-                              'This prediction is not allowed',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onErrorContainer,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 450,
                   ),
-                ],
-              ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DealerCard(game: game),
+                      CardsCard(game: game),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: PredictButtonCard(onPressed: predict),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            CurrentDealerWidget(
-              dealerName: game.players[game.dealer ?? 0],
-            ),
-            Text(
-              '${game.currentRound}. Round',
-              style: const TextStyle(
-                fontSize: 15,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(25.0),
-            ),
-          ],
+          ),
         ),
       ),
     );

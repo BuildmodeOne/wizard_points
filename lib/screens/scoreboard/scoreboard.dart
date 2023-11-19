@@ -20,9 +20,13 @@ class _ScoreboardState extends State<Scoreboard> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, 'Scoreboard', false, widget.game, update),
-      body: ScoreboardWidget(
-        game: widget.game,
+      appBar: getAppBar(context, false, widget.game, update),
+      backgroundColor: getAppBarBackgroundColor(context),
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: ScoreboardWidget(
+          game: widget.game,
+        ),
       ),
     );
   }

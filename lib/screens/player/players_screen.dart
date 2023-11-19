@@ -145,7 +145,8 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, 'Add Players', isRunning, game),
+      appBar: getAppBar(context, isRunning, game),
+      backgroundColor: getAppBarBackgroundColor(context),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -225,126 +226,130 @@ class _PlayerCreationScreenState extends State<PlayerCreationScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Visibility(
-              visible: isRunning,
-              child: Column(
-                children: [
-                  const Text(
-                    'Running Game',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Visibility(
+                visible: isRunning,
+                child: Column(
+                  children: [
+                    const Text(
+                      'Running Game',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${game.currentRound}. Round',
-                    style: const TextStyle(
-                      fontSize: 15,
+                    Text(
+                      '${game.currentRound}. Round',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(4),
-                  ),
-                ],
+                    const Padding(
+                      padding: EdgeInsets.all(4),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Visibility(
-              visible: !isRunning && game.players.isEmpty,
-              child: Expanded(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 200,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        FluentIcons.people_team_20_regular,
-                        size: 50,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                      ),
-                      Text(
-                        'Add at least 3 players to start a game.',
-                        style: TextStyle(
-                          fontSize: 16,
+              Visibility(
+                visible: !isRunning && game.players.isEmpty,
+                child: Expanded(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 200,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FluentIcons.people_team_20_regular,
+                          size: 50,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                        ),
+                        Text(
+                          'Add at least 3 players to start a game.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            ReorderableListView.builder(
-              buildDefaultDragHandles: false,
-              shrinkWrap: true,
-              itemBuilder: (context, index) => Card(
-                key: ValueKey(index),
-                child: ListTile(
-                  title: Text(game.players[index]),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Visibility(
-                        visible: index == game.dealer,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 24),
-                          child: Chip(
-                              elevation: 0,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              avatar: Padding(
-                                padding: const EdgeInsets.only(bottom: 6),
-                                child: Icon(
-                                  FluentIcons.board_games_20_filled,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondaryContainer,
+              ReorderableListView.builder(
+                buildDefaultDragHandles: false,
+                shrinkWrap: true,
+                itemBuilder: (context, index) => Card(
+                  key: ValueKey(index),
+                  child: ListTile(
+                    title: Text(game.players[index]),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Visibility(
+                          visible: index == game.dealer,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 24),
+                            child: Chip(
+                                elevation: 0,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
+                                avatar: Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Icon(
+                                    FluentIcons.board_games_20_filled,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
                                 ),
-                              ),
-                              label: const Text('Dealer'),
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide.none,
-                                borderRadius: BorderRadius.circular(100),
-                              )
-                              // padding: EdgeInsets.all(1),
-                              ),
+                                label: const Text('Dealer'),
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(100),
+                                )
+                                // padding: EdgeInsets.all(1),
+                                ),
+                          ),
                         ),
-                      ),
-                      Visibility(
-                        visible: !isRunning,
-                        child: ReorderableDragStartListener(
-                          index: index,
-                          child: const Icon(Icons.drag_indicator_outlined),
+                        Visibility(
+                          visible: !isRunning,
+                          child: ReorderableDragStartListener(
+                            index: index,
+                            child: const Icon(Icons.drag_indicator_outlined),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Text('${index + 1}. Player'),
+                    ),
+                    leading: const Icon(Icons.person),
+                    onTap: () {
+                      editPlayer(index);
+                    },
                   ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text('${index + 1}. Player'),
-                  ),
-                  leading: const Icon(Icons.person),
-                  onTap: () {
-                    editPlayer(index);
-                  },
                 ),
+                itemCount: game.players.length,
+                onReorder: onReorder,
               ),
-              itemCount: game.players.length,
-              onReorder: onReorder,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

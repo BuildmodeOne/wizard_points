@@ -19,9 +19,8 @@ class TrickSelector extends StatefulWidget {
 }
 
 class _TrickSelectorState extends State<TrickSelector> {
-  final radius = 130;
-
-  final buttonOffset = 120 / 2;
+  final radius = 110;
+  final buttonOffset = 150 / 2;
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +143,9 @@ class _TrickSelectorState extends State<TrickSelector> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        // determin back origin (new round or new trick)
+    return PopScope(
+      onPopInvoked: (_) {
+        // determine back origin (new round or new trick)
         if (round.currentTrick == 0) {
           // new round
           widget.game.currentRound--;
@@ -155,13 +154,16 @@ class _TrickSelectorState extends State<TrickSelector> {
           // new trick
           round.currentTrick--;
         }
-
-        return true;
       },
       child: Scaffold(
-        appBar: getAppBar(context, 'Select trick winner', true, widget.game),
+        appBar: getAppBar(context, true, widget.game),
+        backgroundColor: getAppBarBackgroundColor(context),
         body: Stack(
           children: [
+            Container(
+              constraints: const BoxConstraints.expand(),
+              color: Theme.of(context).colorScheme.background,
+            ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(8),

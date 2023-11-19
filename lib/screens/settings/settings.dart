@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wizard_points/shared/appbar.dart';
 
 import '../../services/config.dart';
 import '../../services/models.dart';
@@ -29,161 +30,179 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Settings'),
-              backgroundColor: themeNotifier.isDark
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : Theme.of(context).colorScheme.primary,
-              foregroundColor: themeNotifier.isDark
-                  ? Theme.of(context).colorScheme.onPrimaryContainer
-                  : Theme.of(context).colorScheme.onPrimary,
-              elevation: 5,
+              foregroundColor: getAppBarForegroundColor(context),
+              backgroundColor: getAppBarBackgroundColor(context),
             ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                top: 8.0,
-                left: 8,
-                right: 12,
-                bottom: 32,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SettingsGroup(
-                    title: 'Personalization',
-                    children: [
-                      SettingsSwitch(
-                        title: 'Dark Mode',
-                        value: themeNotifier.isDark,
-                        onChanged: (value) async {
-                          themeNotifier.setTheme(value);
-
-                          final prefs = await SharedPreferences.getInstance();
-                          prefs.setBool('theme', themeNotifier.isDark);
-                        },
-                        icon: Icons.color_lens_rounded,
+            backgroundColor: getAppBarBackgroundColor(context),
+            body: Container(
+              color: Theme.of(context).colorScheme.background,
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 8.0,
+                        left: 8,
+                        right: 12,
+                        bottom: 32,
                       ),
-                    ],
-                  ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SettingsGroup(
+                            title: 'Personalization',
+                            children: [
+                              SettingsSwitch(
+                                title: 'Dark Mode',
+                                value: themeNotifier.isDark,
+                                onChanged: (value) async {
+                                  themeNotifier.setTheme(value);
 
-                  const Padding(
-                    padding: EdgeInsets.all(6.0),
-                  ),
-
-                  // GAME SETTINGS
-                  SettingsGroup(
-                    title: 'Game Settings',
-                    children: [
-                      // reward only if correct
-                      SettingsSwitch(
-                        title: 'Always reward tricks',
-                        description:
-                            'Players always get points for the number of tricks, even if they predicted them wrong',
-                        value: settings.alwaysRewardTricks,
-                        onChanged: (value) {
-                          settings.alwaysRewardTricks = value;
-                          storage.setItem('settings', settings.toJson());
-
-                          setState(() {});
-                        },
-                        icon: FluentIcons.lightbulb_person_20_filled,
-                      ),
-
-                      // reward if player gets all tricks
-                      IgnorePointer(
-                        ignoring: settings.alwaysRewardTricks,
-                        child: AnimatedOpacity(
-                          opacity: !settings.alwaysRewardTricks ? 1 : 0.3,
-                          duration: const Duration(milliseconds: 250),
-                          child: SettingsSwitch(
-                            title:
-                                'Reward for all tricks despite wrong prediction',
-                            description:
-                                'If a player wins all tricks in a round despite a wrong prediction, the tricks are rewarded. This is only available with more than 1 card.',
-                            value: settings.rewardAllTricksDespitePrediction &&
-                                !settings.alwaysRewardTricks,
-                            onChanged: (value) {
-                              settings.rewardAllTricksDespitePrediction = value;
-                              storage.setItem('settings', settings.toJson());
-
-                              setState(() {});
-                            },
-                            icon: FluentIcons.reward_20_filled,
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setBool('theme', themeNotifier.isDark);
+                                },
+                                icon: Icons.color_lens_rounded,
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
 
-                      // plus minus one
-                      SettingsSwitch(
-                        title: 'Plus/minus one',
-                        description:
-                            'The sum of predictions must not add up to the amount of cards, but can be less or more',
-                        value: settings.plusMinusOneVariant,
-                        onChanged: (value) {
-                          settings.plusMinusOneVariant = value;
-                          storage.setItem('settings', settings.toJson());
-
-                          setState(() {});
-                        },
-                        icon: FluentIcons.clipboard_20_filled,
-                      ),
-
-                      // always allow 0 predictions for last player even if the sum == currentRound
-                      IgnorePointer(
-                        ignoring: !settings.plusMinusOneVariant,
-                        child: AnimatedOpacity(
-                          opacity: settings.plusMinusOneVariant ? 1 : 0.3,
-                          duration: const Duration(milliseconds: 250),
-                          child: SettingsSwitch(
-                            title: 'Allow zero prediction',
-                            description:
-                                'Zero predictions allowed for last player, even if the predictions sum up to the amount of cards',
-                            value: settings.allowZeroPrediction &&
-                                settings.plusMinusOneVariant,
-                            onChanged: (value) {
-                              settings.allowZeroPrediction = value;
-                              storage.setItem('settings', settings.toJson());
-
-                              setState(() {});
-                            },
-                            icon: FluentIcons.clipboard_error_20_filled,
+                          const Padding(
+                            padding: EdgeInsets.all(6.0),
                           ),
-                        ),
+
+                          // GAME SETTINGS
+                          SettingsGroup(
+                            title: 'Game Settings',
+                            children: [
+                              // reward only if correct
+                              SettingsSwitch(
+                                title: 'Always reward tricks',
+                                description:
+                                    'Players always get points for the number of tricks, even if they predicted them wrong',
+                                value: settings.alwaysRewardTricks,
+                                onChanged: (value) {
+                                  settings.alwaysRewardTricks = value;
+                                  storage.setItem(
+                                      'settings', settings.toJson());
+
+                                  setState(() {});
+                                },
+                                icon: FluentIcons.lightbulb_person_20_filled,
+                              ),
+
+                              // reward if player gets all tricks
+                              IgnorePointer(
+                                ignoring: settings.alwaysRewardTricks,
+                                child: AnimatedOpacity(
+                                  opacity:
+                                      !settings.alwaysRewardTricks ? 1 : 0.3,
+                                  duration: const Duration(milliseconds: 250),
+                                  child: SettingsSwitch(
+                                    title:
+                                        'Reward for all tricks despite wrong prediction',
+                                    description:
+                                        'If a player wins all tricks in a round despite a wrong prediction, the tricks are rewarded. This is only available with more than 1 card.',
+                                    value: settings
+                                            .rewardAllTricksDespitePrediction &&
+                                        !settings.alwaysRewardTricks,
+                                    onChanged: (value) {
+                                      settings.rewardAllTricksDespitePrediction =
+                                          value;
+                                      storage.setItem(
+                                          'settings', settings.toJson());
+
+                                      setState(() {});
+                                    },
+                                    icon: FluentIcons.reward_20_filled,
+                                  ),
+                                ),
+                              ),
+
+                              // plus minus one
+                              SettingsSwitch(
+                                title: 'Plus/minus one',
+                                description:
+                                    'The sum of predictions must not add up to the amount of cards, but can be less or more',
+                                value: settings.plusMinusOneVariant,
+                                onChanged: (value) {
+                                  settings.plusMinusOneVariant = value;
+                                  storage.setItem(
+                                      'settings', settings.toJson());
+
+                                  setState(() {});
+                                },
+                                icon: FluentIcons.clipboard_20_filled,
+                              ),
+
+                              // always allow 0 predictions for last player even if the sum == currentRound
+                              IgnorePointer(
+                                ignoring: !settings.plusMinusOneVariant,
+                                child: AnimatedOpacity(
+                                  opacity:
+                                      settings.plusMinusOneVariant ? 1 : 0.3,
+                                  duration: const Duration(milliseconds: 250),
+                                  child: SettingsSwitch(
+                                    title: 'Allow zero prediction',
+                                    description:
+                                        'Zero predictions allowed for last player, even if the predictions sum up to the amount of cards',
+                                    value: settings.allowZeroPrediction &&
+                                        settings.plusMinusOneVariant,
+                                    onChanged: (value) {
+                                      settings.allowZeroPrediction = value;
+                                      storage.setItem(
+                                          'settings', settings.toJson());
+
+                                      setState(() {});
+                                    },
+                                    icon: FluentIcons.clipboard_error_20_filled,
+                                  ),
+                                ),
+                              ),
+
+                              // points for correct prediction
+                              SettingsNumberForm(
+                                title: 'Correct prediction',
+                                description:
+                                    'Points for the correct prediction of tricks',
+                                initialValue: settings
+                                    .pointsForCorrectPrediction
+                                    .toString(),
+                                icon: FluentIcons.predictions_20_filled,
+                                onChanged: (value) {
+                                  try {
+                                    settings.pointsForCorrectPrediction =
+                                        int.parse(value);
+
+                                    storage.setItem(
+                                        'settings', settings.toJson());
+                                    // ignore: empty_catches
+                                  } catch (e) {}
+                                },
+                              ),
+
+                              // points for tricks
+                              SettingsNumberForm(
+                                title: 'Tricks',
+                                description: 'Points for each trick',
+                                initialValue:
+                                    settings.pointsForTricks.toString(),
+                                icon: FluentIcons.sparkle_20_filled,
+                                onChanged: (value) {
+                                  try {
+                                    settings.pointsForTricks = int.parse(value);
+                                    storage.setItem(
+                                        'settings', settings.toJson());
+
+                                    // ignore: empty_catches
+                                  } catch (e) {}
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-
-                      // points for correct prediction
-                      SettingsNumberForm(
-                        title: 'Correct prediction',
-                        description:
-                            'Points for the correct prediction of tricks',
-                        initialValue:
-                            settings.pointsForCorrectPrediction.toString(),
-                        icon: FluentIcons.predictions_20_filled,
-                        onChanged: (value) {
-                          try {
-                            settings.pointsForCorrectPrediction =
-                                int.parse(value);
-
-                            storage.setItem('settings', settings.toJson());
-                            // ignore: empty_catches
-                          } catch (e) {}
-                        },
-                      ),
-
-                      // points for tricks
-                      SettingsNumberForm(
-                        title: 'Tricks',
-                        description: 'Points for each trick',
-                        initialValue: settings.pointsForTricks.toString(),
-                        icon: FluentIcons.sparkle_20_filled,
-                        onChanged: (value) {
-                          try {
-                            settings.pointsForTricks = int.parse(value);
-                            storage.setItem('settings', settings.toJson());
-
-                            // ignore: empty_catches
-                          } catch (e) {}
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),

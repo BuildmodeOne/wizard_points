@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -39,8 +40,6 @@ class _NewSectionScreenState extends State<NewSectionScreen>
     var duration = widget.duration;
 
     controller = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
       vsync: this,
       duration: duration,
     )..addListener(() {
@@ -64,8 +63,10 @@ class _NewSectionScreenState extends State<NewSectionScreen>
   Widget build(BuildContext context) {
     var size = 300.0;
 
-    return WillPopScope(
-      onWillPop: () async => false,
+    size = min(size, MediaQuery.of(context).size.width - 100);
+
+    return PopScope(
+      canPop: false,
       child: SafeArea(
         top: true,
         bottom: false,
@@ -73,7 +74,7 @@ class _NewSectionScreenState extends State<NewSectionScreen>
         right: false,
         child: Scaffold(
           body: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 32),
             child: Flex(
               direction: Axis.vertical,
               children: [
@@ -90,7 +91,6 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints.expand(
-                    // width: size + 150,
                     height: size + 100,
                   ),
                   child: Padding(
@@ -104,10 +104,24 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                           child: SizedBox(
                             height: size,
                             width: size,
-                            child: CircularProgressIndicator(
-                              color: widget.color,
-                              value: controller.value,
-                              strokeWidth: 30,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              fit: StackFit.expand,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceVariant,
+                                  value: 100,
+                                  strokeWidth: 30,
+                                ),
+                                CircularProgressIndicator(
+                                  strokeCap: StrokeCap.round,
+                                  color: widget.color,
+                                  value: controller.value,
+                                  strokeWidth: 30,
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -119,7 +133,6 @@ class _NewSectionScreenState extends State<NewSectionScreen>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                // '${widget.game.currentRound} / ${widget.game.getMaxRounds()}',
                                 '${widget.current} / ${widget.max}',
                                 style: const TextStyle(
                                     fontSize: 30, fontWeight: FontWeight.bold),

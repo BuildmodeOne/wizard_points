@@ -8,15 +8,16 @@ class PlayerButton extends StatelessWidget {
   final Round round;
   final VoidCallback onTab;
   final Game game;
-  const PlayerButton(
-      {required this.player,
-      required this.round,
-      required this.onTab,
-      super.key,
-      required this.playerIndex,
-      required this.game});
+  const PlayerButton({
+    required this.player,
+    required this.round,
+    required this.onTab,
+    super.key,
+    required this.playerIndex,
+    required this.game,
+  });
 
-  final size = 120.0;
+  final size = 150.0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +26,9 @@ class PlayerButton extends StatelessWidget {
         (round.currentTrick > 0 &&
             round.results[round.currentTrick - 1] == playerIndex);
 
-    return InkWell(
+    return GestureDetector(
       onTap: onTab,
-      borderRadius: BorderRadius.circular(size / 2),
-      child: Ink(
+      child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(size / 2),
           color: startPlayer

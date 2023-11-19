@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "autocorrect",
         "autofocus",
         "behaviour",
         "Behaviour",
@@ -8,6 +9,7 @@
         "localstorage",
         "numberpicker",
         "Reorderable",
-        "scrollbars"
+        "scrollbars",
+        "vsync"
     ]
 }

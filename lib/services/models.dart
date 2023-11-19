@@ -88,7 +88,7 @@ class Game {
 
     rounds.add(Round());
 
-    // dont change dealer on first round
+    // don't change dealer on first round
     if (currentRound == 1) {
       return;
     }

@@ -37,79 +37,82 @@ class _GameFinishedScreenState extends State<GameFinishedScreen> {
     }
 
     return Scaffold(
-      appBar:
-          getAppBar(context, 'Wizard Points', false, widget.game, updatePage),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Flex(
-          direction: Axis.vertical,
-          children: [
-            Expanded(
-              child: ConfettiWidget(
-                numberOfParticles: 25,
-                emissionFrequency: 0.013,
-                shouldLoop: true,
-                confettiController: confettiController,
-                blastDirectionality: BlastDirectionality.explosive,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Winner: ${winner.key}',
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+      appBar: getAppBar(context, false, widget.game, updatePage),
+      backgroundColor: getAppBarBackgroundColor(context),
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Flex(
+            direction: Axis.vertical,
+            children: [
+              Expanded(
+                child: ConfettiWidget(
+                  numberOfParticles: 25,
+                  emissionFrequency: 0.013,
+                  shouldLoop: true,
+                  confettiController: confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Winner: ${winner.key}',
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${winner.value} points',
-                      style: const TextStyle(
-                        fontSize: 20,
+                      Text(
+                        '${winner.value} points',
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.5,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: TextButton.icon(
-                        onPressed: () {
-                          var newGame = Game();
-                          newGame.players = widget.game.players;
-                          newGame.dealer = 0;
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: TextButton.icon(
+                          onPressed: () {
+                            var newGame = Game();
+                            newGame.players = widget.game.players;
+                            newGame.dealer = 0;
 
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlayerCreationScreen(
-                                game: newGame,
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PlayerCreationScreen(
+                                  game: newGame,
+                                ),
                               ),
-                            ),
-                            (_) => false,
-                          );
-                        },
-                        icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('New Game'),
+                              (_) => false,
+                            );
+                          },
+                          icon: const Icon(Icons.restart_alt_rounded),
+                          label: const Text('New Game'),
+                        ),
                       ),
-                    ),
-                    ScoreboardWidget(
-                      game: widget.game,
-                    ),
-                  ],
+                      ScoreboardWidget(
+                        game: widget.game,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
