@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#201a19",
-    "theme_color": "#942e25",
+    "theme_color": "#a14031",
     "description": "Wizard Points is a web app that allows you to track your points for the card game 'Wizard'.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
