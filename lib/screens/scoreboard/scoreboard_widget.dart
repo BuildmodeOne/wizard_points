@@ -17,6 +17,7 @@ class ScoreboardWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: scores.length,
         itemBuilder: (context, index) {

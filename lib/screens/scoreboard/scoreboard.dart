@@ -20,12 +20,18 @@ class _ScoreboardState extends State<Scoreboard> {
     }
 
     return Scaffold(
-      appBar: getAppBar(context, false, widget.game, update),
+      appBar: getTitleAppBar(context, 'Scoreboard'),
       backgroundColor: getAppBarBackgroundColor(context),
       body: Container(
         color: Theme.of(context).colorScheme.background,
-        child: ScoreboardWidget(
-          game: widget.game,
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              child: ScoreboardWidget(
+                game: widget.game,
+              ),
+            ),
+          ],
         ),
       ),
     );
