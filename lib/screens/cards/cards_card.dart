@@ -12,7 +12,8 @@ class CardsCard extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: const ShiftedIcon(icon: FluentIcons.copy_24_filled),
-        title: Text('${game.currentRound} Cards'),
+        title: Text(
+            '${game.currentRound} ${game.currentRound == 1 ? 'Card' : 'Cards'}'),
         subtitle: const Text('per Player'),
       ),
     );
