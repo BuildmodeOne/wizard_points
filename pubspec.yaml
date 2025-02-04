@@ -39,7 +39,7 @@ dependencies:
   provider: ^6.0.5
   toggle_switch: ^2.0.1
   fluentui_system_icons: ^1.1.190
-  confetti: ^0.7.0
+  confetti: ^0.8.0
   url_launcher: ^6.2.1
 
 dev_dependencies:
@@ -51,7 +51,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
   build_runner: ^2.3.3
   json_serializable: ^6.1.5
 

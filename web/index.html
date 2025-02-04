@@ -1,21 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-7WZCPDP92F"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-7WZCPDP92F");
-    </script>
-
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
@@ -28,10 +13,26 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="author" content="Philipp Opheys" />
 
-    <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png" />
-    <link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="icons/apple-icon-76x76.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="icons/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="icons/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="icons/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="icons/apple-icon-76x76.png"
+    />
     <link
       rel="apple-touch-icon"
       sizes="114x114"
@@ -63,9 +64,24 @@
       sizes="192x192"
       href="icons/android-icon-192x192.png"
     />
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/favicon-16x16.png"
+    />
 
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -78,29 +94,11 @@
 
     <link rel="manifest" href="manifest.json" />
 
-    <script>
-      // The value below is injected by flutter build, do not touch.
-      var serviceWorkerVersion = null;
-    </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
   </head>
 
   <body>
-    <script>
-      window.addEventListener("load", function (ev) {
-        // Download main.dart.js
-        _flutter.loader.loadEntrypoint({
-          serviceWorker: {
-            serviceWorkerVersion: serviceWorkerVersion,
-          },
-          onEntrypointLoaded: function (engineInitializer) {
-            engineInitializer.initializeEngine().then(function (appRunner) {
-              appRunner.runApp();
-            });
-          },
-        });
-      });
-    </script>
+    <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>

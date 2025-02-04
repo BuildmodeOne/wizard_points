@@ -11,5 +11,7 @@
         "Reorderable",
         "scrollbars",
         "vsync"
-    ]
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
 }
